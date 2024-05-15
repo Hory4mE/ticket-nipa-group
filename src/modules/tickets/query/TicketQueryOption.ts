@@ -26,7 +26,7 @@ export class TicketQueryOptionMaker {
             console.log('option',option.sort_by.sortBy)
         }else{
 
-            option.sort_by.sortBy = []
+            option.sort_by = {sortBy: []}
         }
 
         return option;

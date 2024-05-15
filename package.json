@@ -25,7 +25,7 @@
         "ts-node": "10"
     },
     "dependencies": {
-        "@nipacloud/framework": "^1.6.2",
+        "@nipacloud/framework": "^1.9.1",
         "amqplib": "^0.10.3",
         "axios": "^0.21.1",
         "cross-env": "^7.0.3",

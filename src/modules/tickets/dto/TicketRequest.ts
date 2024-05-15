@@ -48,7 +48,7 @@ export class UpdateTicketRequest {
         const ticket = {
             title: this.title,
             description: this.description,
-            updated_at: new Date(),
+            updated_date: new Date(),
             status: this.status,
         };
         return ticket;
