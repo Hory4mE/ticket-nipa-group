@@ -1,0 +1,53 @@
+{
+    "name": "nipa-example",
+    "version": "1.0.0",
+    "main": "main.js",
+    "license": "MIT",
+    "devDependencies": {
+        "@commitlint/cli": "^17.6.5",
+        "@commitlint/config-conventional": "^17.6.5",
+        "@types/amqplib": "^0.10.1",
+        "@types/chai-as-promised": "^7.1.5",
+        "@types/lodash": "^4.14.168",
+        "@types/mocha": "^10.0.1",
+        "@types/moment": "^2.13.0",
+        "@types/node": "^20.2.5",
+        "@types/sinon": "^10.0.15",
+        "chai": "^4.3.7",
+        "chai-as-promised": "^7.1.1",
+        "husky": "^8.0.0",
+        "mocha": "^10.2.0",
+        "mocha-suppress-logs": "^0.3.1",
+        "nodemon": "^2.0.7",
+        "nyc": "^15.1.0",
+        "prettier": "^2.8.8",
+        "sinon": "^15.1.0",
+        "ts-node": "10"
+    },
+    "dependencies": {
+        "@nipacloud/framework": "^1.6.2",
+        "amqplib": "^0.10.3",
+        "axios": "^0.21.1",
+        "cross-env": "^7.0.3",
+        "dotenv": "^8.2.0",
+        "knex": "^3.1.0",
+        "lodash": "^4.17.20",
+        "moment": "^2.29.1",
+        "moment-timezone": "^0.5.32",
+        "mysql": "^2.18.1",
+        "mysql2": "^2.3.3",
+        "redis": "^4.6.7",
+        "tsconfig-paths": "^3.9.0"
+    },
+    "scripts": {
+        "dev": "nodemon --watch \"**/*\" -e ts,tsx --exec node -r tsconfig-paths/register -r ts-node/register --inspect ./src/main.ts",
+        "test": "nyc mocha test/**/*.Spec.ts --config=.mocharc.json  --exit",
+        "test:unit": "mocha --config=.mocharc.json",
+        "watch": "mocha-typescript-watch",
+        "build": "tsc",
+        "clean": "rm -rf dist/*",
+        "app": " ts-node -r tsconfig-paths/register ./src/main.ts",
+        "app:prod": "cross-env NODE_ENV=production node -r tsconfig-paths/register",
+        "prepare": "husky install"
+    }
+}
