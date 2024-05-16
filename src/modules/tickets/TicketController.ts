@@ -32,7 +32,7 @@ export class TicketController {
     ) {
         try {
             const service = container.get(TicketService);
-            return service.list(queryParam);
+            return service.list(queryParam, header);
         } catch (error) {
             switch (true) {
                 case error instanceof NotFoundError:
@@ -46,11 +46,12 @@ export class TicketController {
     @Get("/:ticketId")
     public async getTicketById(
         @RequestScopeContainer() container: ContainerInstance,
-        @Param("ticketId") ticketId: string
+        @Param("ticketId") ticketId: string,
+        @HeaderParams() header: ITicketHeader
     ) {
         try {
             const service = container.get(TicketService);
-            return service.getById(ticketId);
+            return service.getById(ticketId, header);
         } catch (error) {
             switch (true) {
                 case error instanceof ApplicationError:

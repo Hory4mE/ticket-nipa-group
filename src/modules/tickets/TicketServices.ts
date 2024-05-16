@@ -21,7 +21,13 @@ export class TicketService {
     @Inject()
     private ticketDomainService: TicketDomainService;
 
-    public async list(params: IListTicketQueryParameter): Promise<ITicket[]> {
+    public async list(params: IListTicketQueryParameter, header: ITicketHeader): Promise<ITicket[]> {
+        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        const allowRoles = ["ADMIN", "REVIEWER"];
+        const hasAccess = allowRoles.includes(token.roles);
+        if (!hasAccess) {
+            throw new UnauthorizedError("Invalid Token.");
+        }
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
             const option = TicketQueryOptionMaker.fromTicketListQueryParams(params);
             const tickets = await this.ticketDomainService.list(uow, option);
@@ -32,9 +38,22 @@ export class TicketService {
             }
         });
     }
-    public async getById(ticketId: string): Promise<ITicket> {
+    public async getById(ticketId: string, header: ITicketHeader): Promise<ITicket> {
+        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        const allowRoles = ["ADMIN", "REVIEWER"];
+        const allowRolesUser = ["USER"];
+        const hasAccessAll = allowRoles.includes(token.roles);
+        const hasAccessSelf = allowRolesUser.includes(token.roles);
+        if (!hasAccessAll && !hasAccessSelf) {
+            throw new UnauthorizedError("Invalid Token.");
+        }
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
             const tickets = await this.ticketDomainService.findById(uow, ticketId);
+            if (hasAccessSelf) {
+                if (tickets.user_id != token.user_id) {
+                    throw new UnauthorizedError("Invalid Token.");
+                }
+            }
             return tickets;
         });
     }

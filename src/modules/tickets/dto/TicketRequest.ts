@@ -1,36 +1,36 @@
 /* eslint-disable prettier/prettier */
-import {
-  Expose,
-  IsEnum,
-  IsOptional,
-  IsString,
-} from "@nipacloud/framework/core/util/validator";
+import { Expose, IsEnum, IsOptional, IsString } from "@nipacloud/framework/core/util/validator";
 import { randomUUID } from "crypto";
 
 import { ITicket } from "@app/data/abstraction/entities/ITickets";
 import { TicketStatus } from "../models/Definitions";
 
 export class CreateTicketRequest {
-  @Expose({ name: "title" })
-  @IsString()
-  title: string;
+    @Expose({ name: "title" })
+    @IsString()
+    title: string;
 
-  @Expose({ name: "description" })
-  @IsString()
-  description: string;
+    @Expose({ name: "description" })
+    @IsString()
+    description: string;
 
-  public toTicketEntity(): ITicket {
-    const tickets = {
-      ticket_id: randomUUID(),
-      title: this.title,
-      description: this.description,
-      status: TicketStatus.PENDING,
-      created_date: new Date(),
-      updated_date: new Date(),
-      is_delete: false,
-    };
-    return tickets;
-  }
+    @Expose({ name: "user_id" })
+    @IsString()
+    user_id: string;
+
+    public toTicketEntity(): ITicket {
+        const tickets = {
+            ticket_id: randomUUID(),
+            title: this.title,
+            description: this.description,
+            status: TicketStatus.PENDING,
+            created_date: new Date(),
+            updated_date: new Date(),
+            is_delete: false,
+            user_id: this.user_id,
+        };
+        return tickets;
+    }
 }
 
 export class UpdateTicketRequest {
@@ -61,17 +61,18 @@ export class UpdateTicketRequest {
 }
 
 export class UpdateTicketStatusRequest {
-  @Expose({ name: "status" })
-  @IsOptional()
-  @IsEnum(TicketStatus)
-  status: TicketStatus;
+    @Expose({ name: "status" })
+    @IsOptional()
+    @IsEnum(TicketStatus)
+    status: TicketStatus;
 }
 
 export interface ICreateTicket {
-  ticket_id: string;
-  title: string;
-  description: string;
-  created_date: Date;
-  updated_date: Date;
-  status: TicketStatus;
+    ticket_id: string;
+    title: string;
+    description: string;
+    created_date: Date;
+    updated_date: Date;
+    status: TicketStatus;
+    user_id: string;
 }
