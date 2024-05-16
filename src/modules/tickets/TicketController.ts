@@ -5,6 +5,7 @@ import {
     Delete,
     ForbiddenError,
     Get,
+    HeaderParams,
     InternalServerError,
     JsonController,
     NotFoundError,
@@ -12,23 +13,26 @@ import {
     Patch,
     Post,
     QueryParams,
-    RequestScopeContainer
+    RequestScopeContainer,
 } from "@nipacloud/framework/core/http";
 import { ContainerInstance } from "@nipacloud/framework/core/ioc";
 import "reflect-metadata";
 import { TicketService } from "./TicketServices";
 import { CreateTicketRequest, UpdateTicketRequest, UpdateTicketStatusRequest } from "./dto/TicketRequest";
 import { IListTicketQueryParameter } from "./query/ListTicketQueryParameter";
+import { ITicketHeader } from "./query/TicketHeader";
 
 @JsonController("/v1/tickets")
 export class TicketController {
     @Get("/")
     public async listTickets(
         @RequestScopeContainer() container: ContainerInstance,
-        @QueryParams() queryParam: IListTicketQueryParameter
+        @QueryParams() queryParam: IListTicketQueryParameter,
+        @HeaderParams() header: ITicketHeader
     ) {
         try {
             const service = container.get(TicketService);
+            console.log(header.token);
             return service.list(queryParam);
         } catch (error) {
             switch (true) {
