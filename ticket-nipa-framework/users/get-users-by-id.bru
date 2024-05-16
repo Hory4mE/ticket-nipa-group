@@ -1,0 +1,11 @@
+meta {
+  name: get-users-by-id
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{HOST}}:{{PORT}}/v1/users/1
+  body: none
+  auth: none
+}

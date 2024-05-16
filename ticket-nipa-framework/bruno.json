@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "ticket-nipa-framework",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
