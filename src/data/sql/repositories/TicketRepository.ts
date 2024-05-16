@@ -45,7 +45,7 @@ export class TicketRepository extends DatabaseRepository<ITicket> implements ITi
     }
 
     async findById(id: string): Promise<ITicket> {
-        return this.first((query) => query.where("id", id));
+        return this.first((query) => query.where("ticket_id", id));
     }
 
     async create(ticket: ITicket): Promise<void> {
