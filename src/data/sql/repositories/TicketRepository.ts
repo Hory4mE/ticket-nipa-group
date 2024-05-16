@@ -51,7 +51,7 @@ export class TicketRepository
   }
 
   async updateById(id: string, ticket: Partial<ITicket>): Promise<void> {
-    const partialEntity = { ...ticket, updated_at: new Date() };
+    const partialEntity = { ...ticket, updated_date: new Date() };
     return this.update(partialEntity, (query) => query.where("ticket_id", id));
   }
 
