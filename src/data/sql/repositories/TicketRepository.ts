@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { DatabaseRepository, Knex } from "@nipacloud/framework/data/sql";
+import { DatabaseRepository } from "@nipacloud/framework/data/sql";
 
 import { ITicket } from "@app/data/abstraction/entities/ITickets";
 import { TicketQueryOption } from "@app/modules/tickets/query/TicketQueryOption";
@@ -59,13 +59,5 @@ export class TicketRepository extends DatabaseRepository<ITicket> implements ITi
 
     async deleteById(id: string): Promise<void> {
         return this.update({ "is_delete": true }, (query) => query.where("ticket_id", id));
-    }
-
-    // This is a partial update entity extension for DatabaseRepository
-    async update(
-        entity: Partial<ITicket>,
-        predicate: (queryBuilder: Knex.QueryBuilder<any, any>) => Promise<Knex.QueryBuilder<any, any>>
-    ): Promise<void> {
-        return this.executeQuery(async (query) => predicate(query.update(entity)));
     }
 }
