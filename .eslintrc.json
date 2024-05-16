@@ -1,0 +1,11 @@
+{
+    "extends": ["./node_modules/@nipacloud/framework/.eslintrc.json"],
+    "rules": {
+        "camelcase": ["warn", { "properties": "never" }],
+        "object-curly-newline": ["error", { "ObjectPattern": { "multiline": true } }],
+        "brace-style": ["off"],
+        "no-case-declarations": ["off"],
+        "sort-imports": ["off"],
+        "array-bracket-newline": ["off"]
+    }
+}
