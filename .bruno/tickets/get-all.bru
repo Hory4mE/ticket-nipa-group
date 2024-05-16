@@ -1,0 +1,15 @@
+meta {
+  name: get-all
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{HOST}}:{{PORT}}/v1/tickets
+  body: none
+  auth: none
+}
+
+headers {
+  token: Bearer KUYKUY
+}
