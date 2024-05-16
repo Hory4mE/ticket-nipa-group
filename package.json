@@ -26,10 +26,13 @@
     },
     "dependencies": {
         "@nipacloud/framework": "^1.9.1",
+        "@types/bcrypt": "^5.0.2",
+        "@types/jsonwebtoken": "^9.0.6",
         "amqplib": "^0.10.3",
         "axios": "^0.21.1",
         "cross-env": "^7.0.3",
         "dotenv": "^8.2.0",
+        "jsonwebtoken": "^9.0.2",
         "knex": "^3.1.0",
         "lodash": "^4.17.20",
         "moment": "^2.29.1",
