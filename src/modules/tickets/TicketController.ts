@@ -2,7 +2,9 @@ import {
     Body,
     Delete,
     Get,
+    InternalServerError,
     JsonController,
+    NotFoundError,
     Param,
     Patch,
     Post,
@@ -22,8 +24,15 @@ export class TicketController {
         @RequestScopeContainer() container: ContainerInstance,
         @QueryParams() queryParam: IListTicketQueryParameter
     ) {
-        const service = container.get(TicketService);
-        return service.list(queryParam);
+        try {
+            const service = container.get(TicketService);
+            return service.list(queryParam);
+        } catch (error) {
+            switch(true){
+                case(error instanceof NotFoundError):throw error;
+                case(error instanceof InternalServerError):throw error;
+            }
+        }
     }
 
     @Get("/:ticketId")

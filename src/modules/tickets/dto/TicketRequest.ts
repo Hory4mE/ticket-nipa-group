@@ -34,30 +34,30 @@ export class CreateTicketRequest {
 }
 
 export class UpdateTicketRequest {
-  @Expose({ name: "title" })
-  @IsOptional()
-  @IsString()
-  title: string;
+    @Expose({ name: "title" })
+    @IsOptional()
+    @IsString()
+    title: string;
 
-  @Expose({ name: "description" })
-  @IsOptional()
-  @IsString()
-  description: string;
+    @Expose({ name: "description" })
+    @IsOptional()
+    @IsString()
+    description: string;
 
-  @Expose({ name: "status" })
-  @IsOptional()
-  @IsEnum(TicketStatus)
-  status: TicketStatus;
+    @Expose({ name: "status" })
+    @IsOptional()
+    @IsEnum(TicketStatus)
+    status: TicketStatus;
 
-  public toTicketEntity(): Partial<ITicket> {
-    const ticket = {
-      title: this.title,
-      description: this.description,
-      updated_at: new Date(),
-      status: this.status,
-    };
-    return ticket;
-  }
+    public toTicketEntity(): Partial<ITicket> {
+        const ticket = {
+            title: this.title,
+            description: this.description,
+            updated_date: new Date(),
+            status: this.status,
+        };
+        return ticket;
+    }
 }
 
 export class UpdateTicketStatusRequest {

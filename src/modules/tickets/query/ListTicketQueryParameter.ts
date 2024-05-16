@@ -4,14 +4,13 @@ import {
   Expose,
   IsEnum,
   IsOptional,
-  ISortingConditionType,
+  ISortingConditionType
 } from "@nipacloud/framework/core/util/validator";
 
 import { ITicket } from "@app/data/abstraction/entities/ITickets";
 import { TicketStatus } from "../models/Definitions";
 
-const { SortingConditionTransformer } =
-  createSortingConditionValidator("created_at");
+const { SortingConditionTransformer } = createSortingConditionValidator("ticket_id");
 
 export class IListTicketQueryParameter {
   @IsEnum(TicketStatus)
@@ -20,6 +19,5 @@ export class IListTicketQueryParameter {
 
   @Expose({ name: "sort_by" })
   @IsOptional()
-  // @Transform(({ value }) => JSON.parse(value))
   public sortBy?: ISortingConditionType<ITicket>[];
 }

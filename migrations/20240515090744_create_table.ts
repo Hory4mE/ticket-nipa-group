@@ -10,7 +10,7 @@ export async function up(knex: Knex): Promise<void> {
         table.text("status").notNullable();
         table.text("created_date").notNullable();
         table.text("updated_date").notNullable();
-        table.boolean("is_delete").notNullable();
+        table.boolean("is_delete").notNullable
     });
 }
 

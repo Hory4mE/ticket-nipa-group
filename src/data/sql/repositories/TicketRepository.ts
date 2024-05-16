@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { DatabaseRepository, Knex } from "@nipacloud/framework/data/sql";
+import { DatabaseRepository } from "@nipacloud/framework/data/sql";
 
 import { ITicket } from "@app/data/abstraction/entities/ITickets";
 import { ICreateTicket } from "@app/modules/tickets/dto/TicketRequest";
@@ -31,7 +31,6 @@ export class TicketRepository
       console.log(sort_by.sortBy);
       if (sort_by.sortBy.length != 0) {
         const res = JSON.parse(sort_by.sortBy.toString());
-        // console.log(sort_by);
         res.map((data: any) => {
           if (data.field && data.direction) {
             query.orderBy(data.field, data.direction);
