@@ -5,7 +5,6 @@ import {
   IsEnum,
   IsOptional,
   ISortingConditionType,
-  Transform,
 } from "@nipacloud/framework/core/util/validator";
 
 import { ITicket } from "@app/data/abstraction/entities/ITickets";
@@ -19,8 +18,8 @@ export class IListTicketQueryParameter {
   @IsOptional()
   public readonly status?: TicketStatus;
 
-  @IsOptional()
   @Expose({ name: "sort_by" })
-  @Transform(({ value }) => JSON.parse(value))
+  @IsOptional()
+  // @Transform(({ value }) => JSON.parse(value))
   public sortBy?: ISortingConditionType<ITicket>[];
 }

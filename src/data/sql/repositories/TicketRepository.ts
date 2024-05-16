@@ -2,12 +2,13 @@
 import { DatabaseRepository, Knex } from "@nipacloud/framework/data/sql";
 
 import { ITicket } from "@app/data/abstraction/entities/ITickets";
+import { ICreateTicket } from "@app/modules/tickets/dto/TicketRequest";
 import { TicketQueryOption } from "@app/modules/tickets/query/TicketQueryOption";
 
 export interface ITicketRepository {
   list(option: TicketQueryOption): Promise<ITicket[]>;
   findById(id: string): Promise<ITicket>;
-  create(room: ITicket): Promise<void>;
+  create(room: ICreateTicket): Promise<void>;
   updateById(id: string, room: Partial<ITicket>): Promise<void>;
   deleteById(id: string): Promise<void>;
 }
@@ -27,8 +28,11 @@ export class TicketRepository
       if (paginationQuery) {
         query.offset(paginationQuery.offset).limit(paginationQuery.limit);
       }
-      if (sort_by) {
-        sort_by.sortBy.map((data) => {
+      console.log(sort_by.sortBy);
+      if (sort_by.sortBy.length != 0) {
+        const res = JSON.parse(sort_by.sortBy.toString());
+        // console.log(sort_by);
+        res.map((data: any) => {
           if (data.field && data.direction) {
             query.orderBy(data.field, data.direction);
           }
@@ -42,8 +46,9 @@ export class TicketRepository
     return this.first((query) => query.where("id", id));
   }
 
-  async create(ticket: ITicket): Promise<void> {
-    return this.add(ticket);
+  async create(ticket: ICreateTicket): Promise<void> {
+    const Ticket = { ...ticket, is_delete: false };
+    return this.add(Ticket);
   }
 
   async updateById(id: string, ticket: Partial<ITicket>): Promise<void> {

@@ -22,7 +22,7 @@ export class TicketQueryOptionMaker {
     } else {
       option.status = [];
     }
-    if (params?.sortBy) {
+    if (params.sortBy) {
       option.sort_by = { sortBy: params.sortBy };
     } else {
       option.sort_by = { sortBy: [] };
