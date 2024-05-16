@@ -1,0 +1,17 @@
+meta {
+  name: update-roles-by-id
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{HOST}}:{{PORT}}/v1/users/4
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "roles": "ADMIN"
+  }
+}
