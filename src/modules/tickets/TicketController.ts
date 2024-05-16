@@ -69,11 +69,12 @@ export class TicketController {
     @Post("/")
     public async createTicket(
         @RequestScopeContainer() container: ContainerInstance,
-        @Body() body: CreateTicketRequest
+        @Body() body: CreateTicketRequest,
+        @HeaderParams() header: ITicketHeader
     ) {
         try {
             const service = container.get(TicketService);
-            const result = await service.create(body);
+            await service.create(body, header);
             return { message: "create success" };
         } catch (error) {
             switch (true) {

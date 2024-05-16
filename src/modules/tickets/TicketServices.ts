@@ -12,6 +12,7 @@ import { CreateTicketRequest, UpdateTicketRequest } from "./dto/TicketRequest";
 import { TicketStatus } from "./models/Definitions";
 import { IListTicketQueryParameter } from "./query/ListTicketQueryParameter";
 import { ITicketHeader } from "./query/TicketHeader";
+
 @Service()
 export class TicketService {
     @Inject(AppUnitOfWorkFactoryIdentifier)
@@ -56,10 +57,17 @@ export class TicketService {
             return tickets;
         });
     }
-    public async create(body: CreateTicketRequest): Promise<void> {
+    public async create(body: CreateTicketRequest, header: ITicketHeader): Promise<void> {
+        const entity = body.toTicketEntity();
+        const token: any = jwt.verify(header.token, process.env.SECRET);
+        const newTicket = { ...entity, user_id: token.user_id };
+        const allowedRoles = ["USER", "ADMIN"];
+        const hasAccess = allowedRoles.includes(token.roles);
+        if (!hasAccess) {
+            throw new UnauthorizedError("Invalid Token.");
+        }
         return using(this.unitOfWorkFactory.create())((uow: IAppUnitOfWork) => {
-            const entity = body.toTicketEntity();
-            return this.ticketDomainService.create(uow, entity);
+            return this.ticketDomainService.create(uow, newTicket);
         });
     }
 
