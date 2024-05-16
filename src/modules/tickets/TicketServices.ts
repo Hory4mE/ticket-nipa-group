@@ -1,18 +1,17 @@
 /* eslint-disable prettier/prettier */
 import { IAppUnitOfWork } from "@app/data/abstraction/IAppUnitOfWork";
-import {
-    AppUnitOfWorkFactoryIdentifier,
-    IAppUnitOfWorkFactory,
-} from "@app/data/abstraction/IAppUnitOfWorkFactory";
+import { AppUnitOfWorkFactoryIdentifier, IAppUnitOfWorkFactory } from "@app/data/abstraction/IAppUnitOfWorkFactory";
 import { ITicket } from "@app/data/abstraction/entities/ITickets";
 import { TicketQueryOptionMaker } from "@app/modules/tickets/query/TicketQueryOption";
 import { using } from "@nipacloud/framework/core/disposable";
-import { NotFoundError } from "@nipacloud/framework/core/http";
+import { NotFoundError, UnauthorizedError } from "@nipacloud/framework/core/http";
 import { Inject, Service } from "@nipacloud/framework/core/ioc";
+import jwt from "jsonwebtoken";
 import { TicketDomainService } from "./TicketDomainService";
 import { CreateTicketRequest, UpdateTicketRequest } from "./dto/TicketRequest";
 import { TicketStatus } from "./models/Definitions";
 import { IListTicketQueryParameter } from "./query/ListTicketQueryParameter";
+import { ITicketHeader } from "./query/TicketHeader";
 
 @Service()
 export class TicketService {
@@ -31,7 +30,6 @@ export class TicketService {
             } else {
                 return tickets;
             }
-
         });
     }
     public async getById(ticketId: string): Promise<ITicket> {
@@ -40,41 +38,36 @@ export class TicketService {
             return tickets;
         });
     }
-    public async create(body: CreateTicketRequest): Promise<void> {
+    public async create(body: CreateTicketRequest, header: ITicketHeader): Promise<void> {
+        const entity = body.toTicketEntity();
+        const token: any = jwt.verify(header.token, process.env.SECRET);
+        const newTicket = { ...entity, user_id: token.user_id };
+        const allowedRoles = ["USER", "ADMIN"];
+        const hasAccess = allowedRoles.includes(token.roles);
+        if (!hasAccess) {
+            throw new UnauthorizedError("Invalid Token.");
+        }
         return using(this.unitOfWorkFactory.create())((uow: IAppUnitOfWork) => {
-            const entity = body.toTicketEntity();
-            return this.ticketDomainService.create(uow, entity);
+            return this.ticketDomainService.create(uow, newTicket);
         });
     }
 
-    public async update(
-        ticketId: string,
-        body: UpdateTicketRequest
-    ): Promise<void> {
-        return using(this.unitOfWorkFactory.create())(
-            async (uow: IAppUnitOfWork) => {
-                const entity = body.toTicketEntity();
-                return this.ticketDomainService.update(uow, ticketId, entity);
-            }
-        );
+    public async update(ticketId: string, body: UpdateTicketRequest): Promise<void> {
+        return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
+            const entity = body.toTicketEntity();
+            return this.ticketDomainService.update(uow, ticketId, entity);
+        });
     }
 
-    public async updateStatus(
-        ticketId: string,
-        status: TicketStatus
-    ): Promise<void> {
-        return using(this.unitOfWorkFactory.create())(
-            async (uow: IAppUnitOfWork) => {
-                return this.ticketDomainService.update(uow, ticketId, { status });
-            }
-        );
+    public async updateStatus(ticketId: string, status: TicketStatus): Promise<void> {
+        return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
+            return this.ticketDomainService.update(uow, ticketId, { status });
+        });
     }
 
     public async delete(ticketId: string) {
-        return using(this.unitOfWorkFactory.create())(
-            async (uow: IAppUnitOfWork) => {
-                return this.ticketDomainService.delete(uow, ticketId);
-            }
-        );
+        return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
+            return this.ticketDomainService.delete(uow, ticketId);
+        });
     }
 }

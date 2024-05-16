@@ -32,44 +32,59 @@ export class TicketController {
     ) {
         try {
             const service = container.get(TicketService);
-            console.log(header.token);
             return service.list(queryParam);
         } catch (error) {
             switch (true) {
-                case (error instanceof NotFoundError): throw error;
-                case (error instanceof InternalServerError): throw error;
+                case error instanceof NotFoundError:
+                    throw error;
+                case error instanceof InternalServerError:
+                    throw error;
             }
         }
     }
 
     @Get("/:ticketId")
-    public async getTicketById(@RequestScopeContainer() container: ContainerInstance, @Param("ticketId") ticketId: string) {
+    public async getTicketById(
+        @RequestScopeContainer() container: ContainerInstance,
+        @Param("ticketId") ticketId: string
+    ) {
         try {
             const service = container.get(TicketService);
             return service.getById(ticketId);
         } catch (error) {
             switch (true) {
-                case (error instanceof ApplicationError): throw error;
-                case (error instanceof NotFoundError): throw error;
-                case (error instanceof BadRequestError): throw error;
-                case (error instanceof InternalServerError): throw error;
+                case error instanceof ApplicationError:
+                    throw error;
+                case error instanceof NotFoundError:
+                    throw error;
+                case error instanceof BadRequestError:
+                    throw error;
+                case error instanceof InternalServerError:
+                    throw error;
             }
         }
     }
 
     @Post("/")
-    public async createTicket(@RequestScopeContainer() container: ContainerInstance, @Body() body: CreateTicketRequest) {
+    public async createTicket(
+        @RequestScopeContainer() container: ContainerInstance,
+        @Body() body: CreateTicketRequest,
+        @HeaderParams() header: ITicketHeader
+    ) {
         try {
-
             const service = container.get(TicketService);
-            const result = await service.create(body);
-            return { message: "create success" }
+            await service.create(body, header);
+            return { message: "create success" };
         } catch (error) {
             switch (true) {
-                case (error instanceof ApplicationError): throw error;
-                case (error instanceof BadRequestError): throw error;
-                case (error instanceof InternalServerError): throw error;
-                case (error instanceof ForbiddenError): throw error;
+                case error instanceof ApplicationError:
+                    throw error;
+                case error instanceof BadRequestError:
+                    throw error;
+                case error instanceof InternalServerError:
+                    throw error;
+                case error instanceof ForbiddenError:
+                    throw error;
             }
         }
     }
@@ -83,15 +98,19 @@ export class TicketController {
         try {
             const service = container.get(TicketService);
             const result = await service.update(ticketId, body);
-            return { message: "update success" }
+            return { message: "update success" };
         } catch (error) {
             switch (true) {
-                case (error instanceof NotFoundError): throw error;
-                case (error instanceof ApplicationError): throw error;
-                case (error instanceof ForbiddenError): throw error;
-                case (error instanceof BadRequestError): throw error;
-                case (error instanceof InternalServerError): throw error;
-
+                case error instanceof NotFoundError:
+                    throw error;
+                case error instanceof ApplicationError:
+                    throw error;
+                case error instanceof ForbiddenError:
+                    throw error;
+                case error instanceof BadRequestError:
+                    throw error;
+                case error instanceof InternalServerError:
+                    throw error;
             }
         }
     }
@@ -107,29 +126,40 @@ export class TicketController {
             return service.updateStatus(ticketId, body.status);
         } catch (error) {
             switch (true) {
-                case (error instanceof NotFoundError): throw error;
-                case (error instanceof ApplicationError): throw error;
-                case (error instanceof ForbiddenError): throw error;
-                case (error instanceof BadRequestError): throw error;
-                case (error instanceof InternalServerError): throw error;
-
+                case error instanceof NotFoundError:
+                    throw error;
+                case error instanceof ApplicationError:
+                    throw error;
+                case error instanceof ForbiddenError:
+                    throw error;
+                case error instanceof BadRequestError:
+                    throw error;
+                case error instanceof InternalServerError:
+                    throw error;
             }
         }
     }
 
     @Delete("/:ticketId")
-    public async deleteTicket(@RequestScopeContainer() container: ContainerInstance, @Param("ticketId") ticketId: string) {
+    public async deleteTicket(
+        @RequestScopeContainer() container: ContainerInstance,
+        @Param("ticketId") ticketId: string
+    ) {
         try {
             const service = container.get(TicketService);
             return service.delete(ticketId);
         } catch (error) {
             switch (true) {
-                case (error instanceof NotFoundError): throw error;
-                case (error instanceof ApplicationError): throw error;
-                case (error instanceof ForbiddenError): throw error;
-                case (error instanceof BadRequestError): throw error;
-                case (error instanceof InternalServerError): throw error;
-
+                case error instanceof NotFoundError:
+                    throw error;
+                case error instanceof ApplicationError:
+                    throw error;
+                case error instanceof ForbiddenError:
+                    throw error;
+                case error instanceof BadRequestError:
+                    throw error;
+                case error instanceof InternalServerError:
+                    throw error;
             }
         }
     }
