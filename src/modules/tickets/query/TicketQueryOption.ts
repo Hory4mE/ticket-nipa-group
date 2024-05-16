@@ -11,7 +11,7 @@ export interface TicketQueryOption{
 }
 
 export class TicketQueryOptionMaker {
-    static fromRoomListQueryParams(params: IListTicketQueryParameter) {
+    static fromTicketListQueryParams(params: IListTicketQueryParameter) {
         const option: TicketQueryOption = {};
         option.paginationQuery = PaginationQueryMaker.make(params);
         if (params.status) {

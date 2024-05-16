@@ -18,7 +18,7 @@ export class TicketService{
 
     public async list(params: IListTicketQueryParameter): Promise<ITicket[]> {
         return using(this.unitOfWorkFactory.create())((uow: IAppUnitOfWork) => {
-            const option = TicketQueryOptionMaker.fromRoomListQueryParams(params);
+            const option = TicketQueryOptionMaker.fromTicketListQueryParams(params);
             return uow.ticketRepository.list(option);
         });
     }
