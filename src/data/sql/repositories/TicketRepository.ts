@@ -42,7 +42,7 @@ export class TicketRepository
   }
 
   async findById(id: string): Promise<ITicket> {
-    return this.first((query) => query.where("id", id));
+    return this.first((query) => query.where("ticket_id", id));
   }
 
   async create(ticket: ICreateTicket): Promise<void> {
@@ -51,7 +51,7 @@ export class TicketRepository
   }
 
   async updateById(id: string, ticket: Partial<ITicket>): Promise<void> {
-    const partialEntity = { ...ticket, updated_at: new Date() };
+    const partialEntity = { ...ticket, updated_date: new Date() };
     return this.update(partialEntity, (query) => query.where("ticket_id", id));
   }
 
@@ -59,15 +59,5 @@ export class TicketRepository
     return this.update({ is_delete: true }, (query) =>
       query.where("ticket_id", id)
     );
-  }
-
-  // This is a partial update entity extension for DatabaseRepository
-  async update(
-    entity: Partial<ITicket>,
-    predicate: (
-      queryBuilder: Knex.QueryBuilder<any, any>
-    ) => Promise<Knex.QueryBuilder<any, any>>
-  ): Promise<void> {
-    return this.executeQuery(async (query) => predicate(query.update(entity)));
   }
 }
