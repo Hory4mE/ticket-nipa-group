@@ -9,5 +9,4 @@ export interface ITicket {
     created_date: Date;
     updated_date: Date;
     is_delete: boolean;
-    user_id: string;
 }

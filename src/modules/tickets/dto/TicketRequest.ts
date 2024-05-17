@@ -1,23 +1,18 @@
 /* eslint-disable prettier/prettier */
-import {
-  Expose,
-  IsEnum,
-  IsOptional,
-  IsString,
-} from "@nipacloud/framework/core/util/validator";
+import { Expose, IsEnum, IsOptional, IsString } from "@nipacloud/framework/core/util/validator";
 import { randomUUID } from "crypto";
 
 import { ITicket } from "@app/data/abstraction/entities/ITickets";
 import { TicketStatus } from "../models/Definitions";
 
 export class CreateTicketRequest {
-  @Expose({ name: "title" })
-  @IsString()
-  title: string;
+    @Expose({ name: "title" })
+    @IsString()
+    title: string;
 
-  @Expose({ name: "description" })
-  @IsString()
-  description: string;
+    @Expose({ name: "description" })
+    @IsString()
+    description: string;
 
   @Expose({ name: "user_id" })
   @IsString()
@@ -66,10 +61,10 @@ export class UpdateTicketRequest {
 }
 
 export class UpdateTicketStatusRequest {
-  @Expose({ name: "status" })
-  @IsOptional()
-  @IsEnum(TicketStatus)
-  status: TicketStatus;
+    @Expose({ name: "status" })
+    @IsOptional()
+    @IsEnum(TicketStatus)
+    status: TicketStatus;
 }
 
 export interface ICreateTicket {

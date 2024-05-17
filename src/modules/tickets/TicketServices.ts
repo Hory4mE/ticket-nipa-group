@@ -1,9 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { IAppUnitOfWork } from "@app/data/abstraction/IAppUnitOfWork";
-import {
-    AppUnitOfWorkFactoryIdentifier,
-    IAppUnitOfWorkFactory,
-} from "@app/data/abstraction/IAppUnitOfWorkFactory";
+import { AppUnitOfWorkFactoryIdentifier, IAppUnitOfWorkFactory } from "@app/data/abstraction/IAppUnitOfWorkFactory";
 import { ITicket } from "@app/data/abstraction/entities/ITickets";
 import { TicketQueryOptionMaker } from "@app/modules/tickets/query/TicketQueryOption";
 import { using } from "@nipacloud/framework/core/disposable";
@@ -24,7 +21,13 @@ export class TicketService {
     @Inject()
     private ticketDomainService: TicketDomainService;
 
-    public async list(params: IListTicketQueryParameter): Promise<ITicket[]> {
+    public async list(params: IListTicketQueryParameter, header: ITicketHeader): Promise<ITicket[]> {
+        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        const allowRoles = ["ADMIN", "REVIEWER"];
+        const hasAccess = allowRoles.includes(token.roles);
+        if (!hasAccess) {
+            throw new UnauthorizedError("Invalid Token.");
+        }
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
             const option = TicketQueryOptionMaker.fromTicketListQueryParams(params);
             const tickets = await this.ticketDomainService.list(uow, option);
@@ -33,19 +36,38 @@ export class TicketService {
             } else {
                 return tickets;
             }
-
         });
     }
-    public async getById(ticketId: string): Promise<ITicket> {
+    public async getById(ticketId: string, header: ITicketHeader): Promise<ITicket> {
+        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        const allowRoles = ["ADMIN", "REVIEWER"];
+        const allowRolesUser = ["USER"];
+        const hasAccessAll = allowRoles.includes(token.roles);
+        const hasAccessSelf = allowRolesUser.includes(token.roles);
+        if (!hasAccessAll && !hasAccessSelf) {
+            throw new UnauthorizedError("Invalid Token.");
+        }
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
             const tickets = await this.ticketDomainService.findById(uow, ticketId);
+            if (hasAccessSelf) {
+                if (tickets.user_id != token.user_id) {
+                    throw new UnauthorizedError("Invalid Token.");
+                }
+            }
             return tickets;
         });
     }
-    public async create(body: CreateTicketRequest): Promise<void> {
+    public async create(body: CreateTicketRequest, header: ITicketHeader): Promise<void> {
+        const entity = body.toTicketEntity();
+        const token: any = jwt.verify(header.token, process.env.SECRET);
+        const newTicket = { ...entity, user_id: token.user_id };
+        const allowedRoles = ["USER", "ADMIN"];
+        const hasAccess = allowedRoles.includes(token.roles);
+        if (!hasAccess) {
+            throw new UnauthorizedError("Invalid Token.");
+        }
         return using(this.unitOfWorkFactory.create())((uow: IAppUnitOfWork) => {
-            const entity = body.toTicketEntity();
-            return this.ticketDomainService.create(uow, entity);
+            return this.ticketDomainService.create(uow, newTicket);
         });
     }
 
@@ -149,11 +171,22 @@ export class TicketService {
         );
     }
 
-    public async delete(ticketId: string) {
-        return using(this.unitOfWorkFactory.create())(
-            async (uow: IAppUnitOfWork) => {
-                return this.ticketDomainService.delete(uow, ticketId);
+    public async delete(ticketId: string, header: ITicketHeader) {
+        const token: any = jwt.verify(header.token, process.env.SECRET);
+        const accessRoles = ["USER"];
+        const hasAccess = accessRoles.includes(token.roles);
+        console.log(token)
+        if (!hasAccess) {
+            throw new UnauthorizedError("Invalid Token.");
+        }
+        return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
+            const ticket = await this.ticketDomainService.findById(uow, ticketId);
+            if (!ticket) {
+                throw new NotFoundError("Ticket not found!");
+            } else if (ticket.user_id != token.user_id) {
+                throw new UnauthorizedError("Invalid Token.");
             }
-        );
+            return this.ticketDomainService.delete(uow, ticketId);
+        });
     }
 }
