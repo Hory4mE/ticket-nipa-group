@@ -1,6 +1,3 @@
-import { HttpApplication } from "@nipacloud/framework/core/http/HttpApplication";
-
-// import { ReservationController } from "@app/modules/reservations/ReservationController";
 import {
     ErrorResponderMiddleware,
     RequestContainerLifeCycleMiddleware,
@@ -8,6 +5,7 @@ import {
     RequestLoggerMiddleware,
     RoutingControllersOptions,
 } from "@nipacloud/framework/core/http";
+import { HttpApplication } from "@nipacloud/framework/core/http/HttpApplication";
 import { RequestScopeInjectionMiddleware } from "./middlewares/RequestScopeInjectionMiddleware";
 import { TicketController } from "./modules/tickets/TicketController";
 import { UserController } from "./modules/users/UserController";

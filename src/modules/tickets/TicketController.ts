@@ -74,12 +74,13 @@ export class TicketController {
         @HeaderParams() header: ITicketHeader
     ) {
         try {
-            // console.log(body, header);
             const service = container.get(TicketService);
             await service.create(body, header);
             return { message: "create success" };
         } catch (error) {
             switch (true) {
+                case error instanceof NotFoundError:
+                    throw error;
                 case error instanceof UnauthorizedError:
                     throw error;
                 case error instanceof ApplicationError:
@@ -99,7 +100,7 @@ export class TicketController {
         @RequestScopeContainer() container: ContainerInstance,
         @Param("ticketId") ticketId: string,
         @Body() body: UpdateTicketRequest,
-        @HeaderParams() header : ITicketHeader
+        @HeaderParams() header: ITicketHeader
     ) {
         try {
             const service = container.get(TicketService);
@@ -126,12 +127,12 @@ export class TicketController {
         @RequestScopeContainer() container: ContainerInstance,
         @Param("ticketId") ticketId: string,
         @Body() body: UpdateTicketStatusRequest,
-        @HeaderParams() header : ITicketHeader
+        @HeaderParams() header: ITicketHeader
     ) {
         try {
             const service = container.get(TicketService);
-            await service.updateStatus(ticketId, body.status,header);
-            return { message: "status update success" }
+            await service.updateStatus(ticketId, body.status, header);
+            return { message: "status update success" };
         } catch (error) {
             switch (true) {
                 case error instanceof NotFoundError:
