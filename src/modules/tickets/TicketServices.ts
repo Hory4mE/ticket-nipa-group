@@ -84,8 +84,21 @@ export class TicketService {
         });
     }
 
-    public async delete(ticketId: string) {
+    public async delete(ticketId: string, header: ITicketHeader) {
+        const token: any = jwt.verify(header.token, process.env.SECRET);
+        const accessRoles = ["USER"];
+        const hasAccess = accessRoles.includes(token.roles);
+        console.log(token)
+        if (!hasAccess) {
+            throw new UnauthorizedError("Invalid Token.");
+        }
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
+            const ticket = await this.ticketDomainService.findById(uow, ticketId);
+            if (!ticket) {
+                throw new NotFoundError("Ticket not found!");
+            } else if (ticket.user_id != token.user_id) {
+                throw new UnauthorizedError("Invalid Token.");
+            }
             return this.ticketDomainService.delete(uow, ticketId);
         });
     }
