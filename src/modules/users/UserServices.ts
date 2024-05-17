@@ -2,16 +2,18 @@
 import { IAppUnitOfWork } from "@app/data/abstraction/IAppUnitOfWork";
 import { AppUnitOfWorkFactoryIdentifier, IAppUnitOfWorkFactory } from "@app/data/abstraction/IAppUnitOfWorkFactory";
 import { IUser } from "@app/data/abstraction/entities/IUsers";
+import { generateAccessToken } from "@app/utils/GenJwtToken";
 import { using } from "@nipacloud/framework/core/disposable";
 import { UnauthorizedError } from "@nipacloud/framework/core/http";
 import { Inject, Service } from "@nipacloud/framework/core/ioc";
 import jwt from "jsonwebtoken";
 import { UserDomainService } from "./UserDomainService";
-import { CreateUserRequest, UpdateUserRequest } from "./dto/UserRequest";
+import { CreateUserRequest, LoginUserRequest, UpdateUserRequest } from "./dto/UserRequest";
 import { UserRoles } from "./model/Defination";
 import { IListUserQueryParameter } from "./query/ListUserQueryParameter";
 import { IUserHeader } from "./query/UserHeader";
 import { UserQueryOptionMaker } from "./query/UserQueryOption";
+import bcrypt = require("bcrypt");
 
 @Service()
 export class UserServices {
@@ -54,8 +56,24 @@ export class UserServices {
     }
     public async create(body: CreateUserRequest): Promise<void> {
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
-            const entity = body.toUserEntity();
-            return this.userDomainServices.create(uow, await entity);
+            const entity = await body.toUserEntity();
+            return this.userDomainServices.create(uow, entity);
+        });
+    }
+
+    public async login(body: LoginUserRequest): Promise<any> {
+        return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
+            const { username, password } = body;
+            const params = new IListUserQueryParameter();
+            params.username = username;
+            const option = UserQueryOptionMaker.fromUserListQueryParams(params);
+            const [user] = await this.userDomainServices.list(uow, option);
+            const passwordCorrect = user === null ? false : await bcrypt.compare(password, user.password);
+            if (!(user && passwordCorrect)) {
+                throw new UnauthorizedError("Invalid username or password");
+            }
+            const token = generateAccessToken(user.user_id, user.roles);
+            return { token: token };
         });
     }
 
@@ -69,9 +87,9 @@ export class UserServices {
             throw new UnauthorizedError("Invalid Token.");
         }
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
-            const entity = body.toUserEntity(); 
+            const entity = body.toUserEntity();
             const user = await this.userDomainServices.findById(uow, userId);
-            if(user.user_id != token.user_id || user.roles != token.roles){
+            if (user.user_id != token.user_id || user.roles != token.roles) {
                 throw new UnauthorizedError("Invalid Token")
             }
             return this.userDomainServices.update(uow, userId, entity);
@@ -85,6 +103,12 @@ export class UserServices {
     }
 
     public async delete(userId: string, header: IUserHeader) {
+        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        const allowedRoles = ["ADMIN"];
+        const hasAccess = allowedRoles.includes(token.roles);
+        if (!hasAccess) {
+            throw new UnauthorizedError("Invalid Token.");
+        }
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
             return this.userDomainServices.delete(uow, userId);
         });
