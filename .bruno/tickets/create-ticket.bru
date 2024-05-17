@@ -1,0 +1,22 @@
+meta {
+  name: create-ticket
+  type: http
+  seq: 2
+}
+
+post {
+  url: 127.0.0.1:5500/v1/tickets
+  body: json
+  auth: none
+}
+
+headers {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiOTgzZWEyMzktNjk0MS00ZTRiLTkyMjYtNzVkMzBmNGIyY2U4Iiwicm9sZXMiOiJVU0VSIiwiaWF0IjoxNzE1OTI2NzE2LCJleHAiOjE3MTU5MzAzMTZ9.S6kn9GCD58dh-vVbUrgMl4N19bIjt-NEYns69GAmy_o
+}
+
+body:json {
+  {
+    "title": "test",
+    "description": "test"
+  }
+}

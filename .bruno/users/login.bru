@@ -1,0 +1,18 @@
+meta {
+  name: login
+  type: http
+  seq: 7
+}
+
+post {
+  url: 127.0.0.1:5500/v1/users/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "user1",
+    "password": "123"
+  }
+}
