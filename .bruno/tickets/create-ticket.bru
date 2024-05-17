@@ -5,13 +5,13 @@ meta {
 }
 
 post {
-  url: 127.0.0.1:5500/v1/tickets
+  url: {{HOST}}:{{PORT}}/v1/tickets
   body: json
   auth: none
 }
 
 headers {
-  token: d.eyJ1c2VyX2lkIjoiODcwNjQ3Y2MtMDdkNi00Zjc5LWE3MDQtMTIxODliMjZkNmI4Iiwicm9sZXMiOiJVU0VSIiwiaWF0IjoxNzE1OTMwNzQzLCJleHAiOjE3MTU5MzQzNDN9.bRYca6Ge7IgRmgHXZZJpIwCvf3nhVLRgLYC48gvMoG8
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiOGNkNjA0ZDEtYzQ3Yy00ZWExLTkyMDEtMjlkN2UyYzEwZTNlIiwicm9sZXMiOiJVU0VSIiwiaWF0IjoxNzE1OTMzOTE2LCJleHAiOjE3MTU5Mzc1MTZ9.soy9GNOCKrRRi5vb076-9WcrX2AtzvNOQeWnHSDaLUQ
 }
 
 body:json {
