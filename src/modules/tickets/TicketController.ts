@@ -120,9 +120,11 @@ export class TicketController {
             return { message: "update success" };
         } catch (error) {
             switch (true) {
-                case error instanceof NotFoundError:
-                    throw error;
                 case error instanceof ApplicationError:
+                    throw error;
+                case error instanceof UnauthorizedError:
+                    throw error;
+                case error instanceof NotFoundError:
                     throw error;
                 case error instanceof ForbiddenError:
                     throw error;
