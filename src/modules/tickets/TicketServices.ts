@@ -22,7 +22,7 @@ export class TicketService {
     private ticketDomainService: TicketDomainService;
 
     public async list(params: IListTicketQueryParameter, header: ITicketHeader): Promise<ITicket[]> {
-        const token: any = jwt.verify(header.token, process.env.SECRET);
+        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
         const allowRoles = ["ADMIN", "REVIEWER"];
         const hasAccess = allowRoles.includes(token.roles);
         if (!hasAccess) {
@@ -39,7 +39,7 @@ export class TicketService {
         });
     }
     public async getById(ticketId: string, header: ITicketHeader): Promise<ITicket> {
-        const token: any = jwt.verify(header.token, process.env.SECRET);
+        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
         const allowRoles = ["ADMIN", "REVIEWER"];
         const allowRolesUser = ["USER"];
         const hasAccessAll = allowRoles.includes(token.roles);
@@ -59,7 +59,7 @@ export class TicketService {
     }
     public async create(body: CreateTicketRequest, header: ITicketHeader): Promise<void> {
         const entity = body.toTicketEntity();
-        const token: any = jwt.verify(header.token, process.env.SECRET);
+        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
         entity.user_id = token.user_id;
         const allowedRoles = ["USER", "ADMIN"];
         const hasAccess = allowedRoles.includes(token.roles);
@@ -78,7 +78,7 @@ export class TicketService {
                 throw new UnauthorizedError("No token provided");
             }
 
-            const decoded: any = jwt.verify(receivedToken, process.env.SECRET);
+            const decoded: any = jwt.verify(receivedToken, process.env.JWT_ACCESS_SECRET);
             const userRoles = decoded.roles || [];
             const allowedRoles = ["USER"];
 
@@ -119,7 +119,7 @@ export class TicketService {
                 throw new UnauthorizedError("No token provided");
             }
 
-            const decoded: any = jwt.verify(receivedToken, process.env.SECRET);
+            const decoded: any = jwt.verify(receivedToken, process.env.JWT_ACCESS_SECRET);
             const userRoles = decoded.roles || [];
             const allowedRoles = ["ADMIN"];
 
@@ -153,7 +153,7 @@ export class TicketService {
     }
 
     public async delete(ticketId: string, header: ITicketHeader) {
-        const token: any = jwt.verify(header.token, process.env.SECRET);
+        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
         const accessRoles = ["USER"];
         const hasAccess = accessRoles.includes(token.roles);
         console.log(token);

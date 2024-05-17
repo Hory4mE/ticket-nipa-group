@@ -9,3 +9,4 @@ DotEnv.config();
 const port = parseInt(process.env.PORT || "5500");
 const app = new Application();
 app.start(port);
+app.useServer({ cors: true });
