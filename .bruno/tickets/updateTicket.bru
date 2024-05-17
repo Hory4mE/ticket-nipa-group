@@ -1,0 +1,21 @@
+meta {
+  name: updateTicket
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{HOST}}:{{PORT}}/v1/tickets/1
+  body: json
+  auth: none
+}
+
+headers {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlcl9pZCI6IjEiLCJyb2xlcyI6IlVTRVIiLCJpYXQiOjE1MTYyMzkwMjJ9.tafDNA9nSo2d95PtZHxVst2ZLhRNMzmWzeoyVvj84qc
+}
+
+body:json {
+  {
+    "title": "kadkkvadv"
+  }
+}
