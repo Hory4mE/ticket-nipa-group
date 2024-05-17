@@ -1,6 +1,6 @@
 import bcrypt = require("bcrypt");
 export async function hashData(password: string) {
-    const salt = process.env.SALT;
-    const hashData = bcrypt.hash(password, salt)
+    const salt = parseInt(process.env.SALT);
+    const hashData = await bcrypt.hash(password, salt);
     return hashData;
 }

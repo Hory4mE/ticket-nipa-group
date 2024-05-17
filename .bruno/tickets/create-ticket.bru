@@ -1,0 +1,22 @@
+meta {
+  name: create-ticket
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{HOST}}:{{PORT}}/v1/tickets
+  body: json
+  auth: none
+}
+
+headers {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlcl9pZCI6IjEiLCJyb2xlcyI6IkFETUlOIiwiaWF0IjoxNTE2MjM5MDIyfQ.LPdji1Rqje4OXgb2XMy22ptx5jfo6X-jlSV7zmK2Zxs
+}
+
+body:json {
+  {
+    "title": "title",
+    "description": "description"
+  }
+}
