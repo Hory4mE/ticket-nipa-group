@@ -104,10 +104,11 @@ export class UserController {
     public async updateUserRoles(
         @RequestScopeContainer() container: ContainerInstance,
         @Param("userId") userId: string,
-        @Body() body: UpdateRolesRequest
+        @Body() body: UpdateRolesRequest,
+        @HeaderParams() header: IUserHeader
     ) {
         const service = container.get(UserServices);
-        return service.updateRoles(userId, body.roles);
+        return service.updateRoles(userId, body.roles, header);
     }
 
     @Delete("/:userId")
