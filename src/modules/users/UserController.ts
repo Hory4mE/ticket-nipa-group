@@ -62,7 +62,7 @@ export class UserController {
     public async createUser(@RequestScopeContainer() container: ContainerInstance, @Body() body: CreateUserRequest) {
         try {
             const service = container.get(UserServices);
-            const result = await service.create(body);
+            await service.create(body);
             return { message: "create success" };
         } catch (error) {
             throw error;
