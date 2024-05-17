@@ -6,7 +6,7 @@ import { TicketQueryOptionMaker } from "@app/modules/tickets/query/TicketQueryOp
 import { using } from "@nipacloud/framework/core/disposable";
 import { NotFoundError, UnauthorizedError } from "@nipacloud/framework/core/http";
 import { Inject, Service } from "@nipacloud/framework/core/ioc";
-import jwt from "jsonwebtoken";
+import jwt, { TokenExpiredError } from "jsonwebtoken";
 import { TicketDomainService } from "./TicketDomainService";
 import { CreateTicketRequest, UpdateTicketRequest } from "./dto/TicketRequest";
 import { TicketStatus } from "./models/Definitions";
@@ -22,7 +22,19 @@ export class TicketService {
     private ticketDomainService: TicketDomainService;
 
     public async list(params: IListTicketQueryParameter, header: ITicketHeader): Promise<ITicket[]> {
-        const token: any = jwt.verify(header.token, process.env.SECRET);
+        // const token: any = jwt.verify(header.token, process.env.SECRET);
+        const token: any = jwt.verify(header.token, process.env.SECRET, (error, token) => {
+            if (error) {
+                // console.error("error", error);
+                throw error;
+            }
+            console.log("token", token);
+            return token;
+        });
+        if (!token || token.exp) {
+            console.log(token.exp);
+            throw new TokenExpiredError("token expired", new Date());
+        }
         const allowRoles = ["ADMIN", "REVIEWER"];
         const hasAccess = allowRoles.includes(token.roles);
         if (!hasAccess) {
@@ -59,15 +71,15 @@ export class TicketService {
     }
     public async create(body: CreateTicketRequest, header: ITicketHeader): Promise<void> {
         const entity = body.toTicketEntity();
-        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
-        entity.user_id = token.user_id;
+        const token: any = jwt.verify(header.token, process.env.SECRET);
+        const newTicket = { ...entity, user_id: token.user_id };
         const allowedRoles = ["USER", "ADMIN"];
         const hasAccess = allowedRoles.includes(token.roles);
         if (!hasAccess) {
             throw new UnauthorizedError("Invalid Token.");
         }
         return using(this.unitOfWorkFactory.create())((uow: IAppUnitOfWork) => {
-            return this.ticketDomainService.create(uow, entity);
+            return this.ticketDomainService.create(uow, newTicket);
         });
     }
 
