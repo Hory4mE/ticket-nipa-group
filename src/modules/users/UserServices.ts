@@ -4,7 +4,7 @@ import { AppUnitOfWorkFactoryIdentifier, IAppUnitOfWorkFactory } from "@app/data
 import { IUser } from "@app/data/abstraction/entities/IUsers";
 import { generateAccessToken } from "@app/utils/GenJwtToken";
 import { using } from "@nipacloud/framework/core/disposable";
-import { UnauthorizedError } from "@nipacloud/framework/core/http";
+import { BadRequestError, UnauthorizedError } from "@nipacloud/framework/core/http";
 import { Inject, Service } from "@nipacloud/framework/core/ioc";
 import jwt from "jsonwebtoken";
 import { UserDomainService } from "./UserDomainService";
@@ -56,7 +56,15 @@ export class UserServices {
     }
     public async create(body: CreateUserRequest): Promise<void> {
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
+            const { username } = body;
             const entity = await body.toUserEntity();
+            const params = new IListUserQueryParameter();
+            params.username = username;
+            const option = UserQueryOptionMaker.fromUserListQueryParams(params);
+            const [user] = await this.userDomainServices.list(uow, option);
+            if (user) {
+                throw new BadRequestError("Duplicate username")
+            }
             return this.userDomainServices.create(uow, entity);
         });
     }
