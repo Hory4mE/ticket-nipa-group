@@ -11,6 +11,7 @@ import {
     Post,
     QueryParams,
     RequestScopeContainer,
+    UnauthorizedError,
 } from "@nipacloud/framework/core/http";
 import { ContainerInstance } from "@nipacloud/framework/core/ioc";
 import "reflect-metadata";
@@ -104,8 +105,23 @@ export class UserController {
     }
 
     @Delete("/:userId")
-    public async deleteUser(@RequestScopeContainer() container: ContainerInstance, @Param("userId") userId: string) {
-        const service = container.get(UserServices);
-        return service.delete(userId);
+    public async deleteUser(
+        @RequestScopeContainer() container: ContainerInstance,
+        @Param("userId") userId: string,
+        @HeaderParams() header: IUserHeader
+    ) {
+        try {
+            const service = container.get(UserServices);
+            return service.delete(userId, header);
+        } catch (error) {
+            switch (true) {
+                case error instanceof UnauthorizedError:
+                    throw error;
+                case error instanceof NotFoundError:
+                    throw error;
+                case error instanceof InternalServerError:
+                    throw error;
+            }
+        }
     }
 }

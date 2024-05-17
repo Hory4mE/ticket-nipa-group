@@ -72,7 +72,13 @@ export class UserServices {
         });
     }
 
-    public async delete(userId: string) {
+    public async delete(userId: string, header: IUserHeader) {
+        const token: any = jwt.verify(header.token, process.env.SECRET);
+        const allowedRoles = ["ADMIN"];
+        const hasAccess = allowedRoles.includes(token.roles)
+        if (!hasAccess) {
+          throw new UnauthorizedError("Invalid Token.")
+        }
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
             return this.userDomainServices.delete(uow, userId);
         });
