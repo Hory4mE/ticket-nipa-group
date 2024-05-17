@@ -73,6 +73,7 @@ export class TicketController {
         @HeaderParams() header: ITicketHeader
     ) {
         try {
+            // console.log(body, header);
             const service = container.get(TicketService);
             await service.create(body, header);
             return { message: "create success" };

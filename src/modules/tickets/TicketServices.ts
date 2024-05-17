@@ -59,15 +59,15 @@ export class TicketService {
     }
     public async create(body: CreateTicketRequest, header: ITicketHeader): Promise<void> {
         const entity = body.toTicketEntity();
-        const token: any = jwt.verify(header.token, process.env.SECRET);
-        const newTicket = { ...entity, user_id: token.user_id };
+        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        entity.user_id = token.user_id;
         const allowedRoles = ["USER", "ADMIN"];
         const hasAccess = allowedRoles.includes(token.roles);
         if (!hasAccess) {
             throw new UnauthorizedError("Invalid Token.");
         }
         return using(this.unitOfWorkFactory.create())((uow: IAppUnitOfWork) => {
-            return this.ticketDomainService.create(uow, newTicket);
+            return this.ticketDomainService.create(uow, entity);
         });
     }
 
