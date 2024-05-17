@@ -110,11 +110,12 @@ export class TicketController {
     public async updateTicket(
         @RequestScopeContainer() container: ContainerInstance,
         @Param("ticketId") ticketId: string,
-        @Body() body: UpdateTicketRequest
+        @Body() body: UpdateTicketRequest,
+        @HeaderParams() header : ITicketHeader
     ) {
         try {
             const service = container.get(TicketService);
-            const result = await service.update(ticketId, body);
+            const result = await service.update(ticketId, body, header);
             return { message: "update success" };
         } catch (error) {
             switch (true) {
@@ -136,11 +137,13 @@ export class TicketController {
     public async updateTicketStatus(
         @RequestScopeContainer() container: ContainerInstance,
         @Param("ticketId") ticketId: string,
-        @Body() body: UpdateTicketStatusRequest
+        @Body() body: UpdateTicketStatusRequest,
+        @HeaderParams() header : ITicketHeader
     ) {
         try {
             const service = container.get(TicketService);
-            return service.updateStatus(ticketId, body.status);
+            await service.updateStatus(ticketId, body.status,header);
+            return { message: "status update success" }
         } catch (error) {
             switch (true) {
                 case error instanceof NotFoundError:
