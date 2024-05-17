@@ -28,7 +28,7 @@ export class UserServices {
         const allowRoles = ["ADMIN", "REVIEWER"];
         const hasAccess = allowRoles.includes(token.roles);
         if (!hasAccess) {
-            throw new UnauthorizedError("Invalid Token.");
+            throw new UnauthorizedError("You don't have permission to list all user.");
         }
         return using(this.unitOfWorkFactory.create())((uow: IAppUnitOfWork) => {
             const option = UserQueryOptionMaker.fromUserListQueryParams(params);
@@ -48,7 +48,7 @@ export class UserServices {
             const user = await this.userDomainServices.findById(uow, userId);
             if (hasAccessSelf) {
                 if (user.user_id != token.user_id || user.roles != token.roles) {
-                    throw new UnauthorizedError("Invalid Token.");
+                    throw new UnauthorizedError("You don't have permission to do this action!");
                 }
             }
             return user;
@@ -77,15 +77,33 @@ export class UserServices {
         });
     }
 
-    public async update(userId: string, body: UpdateUserRequest): Promise<void> {
+    public async update(userId: string, body: UpdateUserRequest, header: IUserHeader): Promise<void> {
+        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        const allowRoles = ["ADMIN"];
+        const allowRolesUser = ["USER"];
+        const hasAccessAll = allowRoles.includes(token.roles);
+        const hasAccessSelf = allowRolesUser.includes(token.roles);
+        if (!hasAccessAll && !hasAccessSelf) {
+            throw new UnauthorizedError("Invalid Token.");
+        }
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
             const entity = body.toUserEntity();
+            const user = await this.userDomainServices.findById(uow, userId);
+            if (user.user_id != token.user_id || user.roles != token.roles) {
+                throw new UnauthorizedError("You don't have permission to update this user's data.")
+            }
             return this.userDomainServices.update(uow, userId, entity);
         });
     }
 
-    public async updateRoles(userId: string, roles: UserRoles): Promise<void> {
+    public async updateRoles(userId: string, roles: UserRoles, header: IUserHeader): Promise<void> {
+        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        const allowedRoles = ["ADMIN"];
+        const hasAccess = allowedRoles.includes(token.roles);
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
+            if (!hasAccess) {
+                throw new UnauthorizedError("You don't have permission to update this roles.");
+            }
             return this.userDomainServices.update(uow, userId, { roles });
         });
     }
@@ -95,7 +113,7 @@ export class UserServices {
         const allowedRoles = ["ADMIN"];
         const hasAccess = allowedRoles.includes(token.roles);
         if (!hasAccess) {
-            throw new UnauthorizedError("Invalid Token.");
+            throw new UnauthorizedError("You don't have permission to delete this user.");
         }
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
             return this.userDomainServices.delete(uow, userId);
