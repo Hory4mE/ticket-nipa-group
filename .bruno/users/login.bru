@@ -1,0 +1,18 @@
+meta {
+  name: login
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{HOST}}:{{PORT}}/v1/users/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "username test",
+    "password": "password test"
+  }
+}
