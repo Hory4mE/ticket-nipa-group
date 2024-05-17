@@ -14,10 +14,6 @@ export class CreateTicketRequest {
     @IsString()
     description: string;
 
-    @Expose({ name: "user_id" })
-    @IsString()
-    user_id: string;
-
     public toTicketEntity(): ITicket {
         const tickets = {
             ticket_id: randomUUID(),
@@ -27,7 +23,7 @@ export class CreateTicketRequest {
             created_date: new Date(),
             updated_date: new Date(),
             is_delete: false,
-            user_id: this.user_id,
+            user_id: "",
         };
         return tickets;
     }
