@@ -72,22 +72,28 @@ export class UserController {
     @Post("/login")
     public async loginUser(@RequestScopeContainer() container: ContainerInstance, @Body() body: LoginUserRequest) {
         try {
-            // const service = container.get(UserServices);
-            // const result = await service.create(body);
-            return { message: "login success" };
+            const service = container.get(UserServices);
+            const response = await service.login(body);
+            return response;
         } catch (error) {
-            throw error;
+            switch (true) {
+                case error instanceof UnauthorizedError:
+                    throw error;
+                case error instanceof InternalServerError:
+                    throw error;
+            }
         }
     }
     @Patch("/:userId")
     public async updateUserPassword(
         @RequestScopeContainer() container: ContainerInstance,
         @Param("userId") userId: string,
+        @HeaderParams() header : IUserHeader,
         @Body() body: UpdateUserRequest
     ) {
         try {
             const service = container.get(UserServices);
-            const result = await service.update(userId, body);
+            const result = await service.update(userId, body, header);
             return { message: "update success" };
         } catch (error) {
             throw error;

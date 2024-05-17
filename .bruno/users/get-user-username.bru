@@ -1,0 +1,19 @@
+meta {
+  name: get-user-username
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{HOST}}:{{PORT}}/v1/users?username=username test
+  body: none
+  auth: none
+}
+
+query {
+  username: username test
+}
+
+headers {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsInJvbGVzIjoiQURNSU4iLCJpYXQiOjE3MTU5MzQyNzcsImV4cCI6MTcxNTkzNzg3N30.mFgYMFURO8WBijJJ7FitkwEYDXRVMLdtppFdnHtLhdE
+}
