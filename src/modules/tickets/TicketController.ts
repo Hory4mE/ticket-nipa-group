@@ -102,7 +102,7 @@ export class TicketController {
     ) {
         try {
             const service = container.get(TicketService);
-            const result = await service.update(ticketId, body);
+            const result = await service.update(ticketId, body, header);
             return { message: "update success" };
         } catch (error) {
             switch (true) {
