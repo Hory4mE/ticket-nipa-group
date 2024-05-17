@@ -134,7 +134,7 @@ export class TicketService {
 
                 const decoded: any = jwt.verify(receivedToken, process.env.SECRET);
                 const userRoles = decoded.roles || [];
-                const allowedRoles = ['USER'];
+                const allowedRoles = ['ADMIN'];
 
                 console.log(decoded.roles)
                 const hasAccess = allowedRoles.includes(decoded.roles);
