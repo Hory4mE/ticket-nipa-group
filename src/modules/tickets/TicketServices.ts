@@ -22,7 +22,7 @@ export class TicketService {
     private ticketDomainService: TicketDomainService;
 
     public async list(params: IListTicketQueryParameter, header: ITicketHeader): Promise<ITicket[]> {
-        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        const token: any = jwt.verify(header.token, process.env.SECRET);
         const allowRoles = ["ADMIN", "REVIEWER"];
         const hasAccess = allowRoles.includes(token.roles);
         if (!hasAccess) {
@@ -39,7 +39,7 @@ export class TicketService {
         });
     }
     public async getById(ticketId: string, header: ITicketHeader): Promise<ITicket> {
-        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        const token: any = jwt.verify(header.token, process.env.SECRET);
         const allowRoles = ["ADMIN", "REVIEWER"];
         const allowRolesUser = ["USER"];
         const hasAccessAll = allowRoles.includes(token.roles);
@@ -59,15 +59,15 @@ export class TicketService {
     }
     public async create(body: CreateTicketRequest, header: ITicketHeader): Promise<void> {
         const entity = body.toTicketEntity();
-        const token: any = jwt.verify(header.token, process.env.SECRET);
-        const newTicket = { ...entity, user_id: token.user_id };
+        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        entity.user_id = token.user_id;
         const allowedRoles = ["USER", "ADMIN"];
         const hasAccess = allowedRoles.includes(token.roles);
         if (!hasAccess) {
             throw new UnauthorizedError("Invalid Token.");
         }
         return using(this.unitOfWorkFactory.create())((uow: IAppUnitOfWork) => {
-            return this.ticketDomainService.create(uow, newTicket);
+            return this.ticketDomainService.create(uow, entity);
         });
     }
 
@@ -175,7 +175,7 @@ export class TicketService {
         const token: any = jwt.verify(header.token, process.env.SECRET);
         const accessRoles = ["USER"];
         const hasAccess = accessRoles.includes(token.roles);
-        console.log(token)
+        console.log(token);
         if (!hasAccess) {
             throw new UnauthorizedError("Invalid Token.");
         }
