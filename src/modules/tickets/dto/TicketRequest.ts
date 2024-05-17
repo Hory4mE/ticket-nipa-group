@@ -14,6 +14,7 @@ export class CreateTicketRequest {
     @IsString()
     description: string;
 
+
   @Expose({ name: "user_id" })
   @IsString()
   user_id: string
