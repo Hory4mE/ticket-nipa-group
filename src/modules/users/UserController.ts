@@ -76,7 +76,12 @@ export class UserController {
             const response = await service.login(body);
             return response;
         } catch (error) {
-            throw error;
+            switch (true) {
+                case error instanceof UnauthorizedError:
+                    throw error;
+                case error instanceof InternalServerError:
+                    throw error;
+            }
         }
     }
     @Patch("/:userId")

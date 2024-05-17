@@ -24,7 +24,7 @@ export class UserServices {
     private userDomainServices: UserDomainService;
 
     public async list(params: IListUserQueryParameter, header: IUserHeader): Promise<IUser[]> {
-        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        const token: any = jwt.verify(header.token, process.env.SECRET);
         const allowRoles = ["ADMIN", "REVIEWER"];
         const hasAccess = allowRoles.includes(token.roles);
         if (!hasAccess) {
@@ -36,7 +36,7 @@ export class UserServices {
         });
     }
     public async getById(userId: string, header: IUserHeader): Promise<IUser> {
-        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        const token: any = jwt.verify(header.token, process.env.SECRET);
         const allowRoles = ["ADMIN"];
         const allowRolesUser = ["USER"];
         const hasAccessAll = allowRoles.includes(token.roles);
@@ -73,7 +73,7 @@ export class UserServices {
                 throw new UnauthorizedError("Invalid username or password");
             }
             const token = generateAccessToken(user.user_id, user.roles);
-            return { token: token, user: { user_id: user.user_id, roles: user.roles } };
+            return { token: token };
         });
     }
 
