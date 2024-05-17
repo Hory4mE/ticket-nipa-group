@@ -17,6 +17,8 @@ import {
     UnauthorizedError,
 } from "@nipacloud/framework/core/http";
 import { ContainerInstance } from "@nipacloud/framework/core/ioc";
+import { DatabaseError } from "@nipacloud/framework/data/sql";
+import { JsonWebTokenError } from "jsonwebtoken";
 import "reflect-metadata";
 import { TicketService } from "./TicketServices";
 import { CreateTicketRequest, UpdateTicketRequest, UpdateTicketStatusRequest } from "./dto/TicketRequest";
@@ -35,10 +37,18 @@ export class TicketController {
             const service = container.get(TicketService);
             return service.list(queryParam, header);
         } catch (error) {
+            console.error(error);
             switch (true) {
                 case error instanceof NotFoundError:
                     throw error;
+                case error instanceof DatabaseError:
+                    throw error;
+                case error instanceof JsonWebTokenError:
+                    throw error;
+                // throw new JsonWebTokenError("jwt err");
                 case error instanceof InternalServerError:
+                    throw error;
+                default:
                     throw error;
             }
         }
@@ -62,6 +72,8 @@ export class TicketController {
                 case error instanceof BadRequestError:
                     throw error;
                 case error instanceof InternalServerError:
+                    throw error;
+                default:
                     throw error;
             }
         }
