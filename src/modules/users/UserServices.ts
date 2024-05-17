@@ -22,7 +22,7 @@ export class UserServices {
     private userDomainServices: UserDomainService;
 
     public async list(params: IListUserQueryParameter, header: IUserHeader): Promise<IUser[]> {
-        const token: any = jwt.verify(header.token, process.env.SECRET);
+        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
         const allowRoles = ["ADMIN", "REVIEWER"];
         const hasAccess = allowRoles.includes(token.roles);
         if (!hasAccess) {
@@ -34,7 +34,7 @@ export class UserServices {
         });
     }
     public async getById(userId: string, header: IUserHeader): Promise<IUser> {
-        const token: any = jwt.verify(header.token, process.env.SECRET);
+        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
         const allowRoles = ["ADMIN"];
         const allowRolesUser = ["USER"];
         const hasAccessAll = allowRoles.includes(token.roles);
@@ -54,14 +54,26 @@ export class UserServices {
     }
     public async create(body: CreateUserRequest): Promise<void> {
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
-            const entity = await body.toUserEntity();
-            return this.userDomainServices.create(uow, entity);
+            const entity = body.toUserEntity();
+            return this.userDomainServices.create(uow, await entity);
         });
     }
 
-    public async update(userId: string, body: UpdateUserRequest): Promise<void> {
+    public async update(userId: string, body: UpdateUserRequest, header: IUserHeader): Promise<void> {
+        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        const allowRoles = ["ADMIN"];
+        const allowRolesUser = ["USER"];
+        const hasAccessAll = allowRoles.includes(token.roles);
+        const hasAccessSelf = allowRolesUser.includes(token.roles);
+        if (!hasAccessAll && !hasAccessSelf) {
+            throw new UnauthorizedError("Invalid Token.");
+        }
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
-            const entity = body.toUserEntity();
+            const entity = body.toUserEntity(); 
+            const user = await this.userDomainServices.findById(uow, userId);
+            if(user.user_id != token.user_id || user.roles != token.roles){
+                throw new UnauthorizedError("Invalid Token")
+            }
             return this.userDomainServices.update(uow, userId, entity);
         });
     }
@@ -73,12 +85,6 @@ export class UserServices {
     }
 
     public async delete(userId: string, header: IUserHeader) {
-        const token: any = jwt.verify(header.token, process.env.SECRET);
-        const allowedRoles = ["ADMIN"];
-        const hasAccess = allowedRoles.includes(token.roles);
-        if (!hasAccess) {
-            throw new UnauthorizedError("Invalid Token.");
-        }
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
             return this.userDomainServices.delete(uow, userId);
         });
