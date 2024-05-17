@@ -14,6 +14,7 @@ import {
     Post,
     QueryParams,
     RequestScopeContainer,
+    UnauthorizedError,
 } from "@nipacloud/framework/core/http";
 import { ContainerInstance } from "@nipacloud/framework/core/ioc";
 import "reflect-metadata";
@@ -78,6 +79,8 @@ export class TicketController {
             return { message: "create success" };
         } catch (error) {
             switch (true) {
+                case error instanceof UnauthorizedError:
+                    throw error;
                 case error instanceof ApplicationError:
                     throw error;
                 case error instanceof BadRequestError:
@@ -144,13 +147,17 @@ export class TicketController {
     @Delete("/:ticketId")
     public async deleteTicket(
         @RequestScopeContainer() container: ContainerInstance,
-        @Param("ticketId") ticketId: string
+        @Param("ticketId") ticketId: string,
+        @HeaderParams() header: ITicketHeader
     ) {
         try {
             const service = container.get(TicketService);
-            return service.delete(ticketId);
+            await service.delete(ticketId, header);
+            return { message: "delete success" };
         } catch (error) {
             switch (true) {
+                case error instanceof UnauthorizedError:
+                    throw error;
                 case error instanceof NotFoundError:
                     throw error;
                 case error instanceof ApplicationError:
