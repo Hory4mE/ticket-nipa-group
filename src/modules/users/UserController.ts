@@ -88,11 +88,12 @@ export class UserController {
     public async updateUserPassword(
         @RequestScopeContainer() container: ContainerInstance,
         @Param("userId") userId: string,
+        @HeaderParams() header : IUserHeader,
         @Body() body: UpdateUserRequest
     ) {
         try {
             const service = container.get(UserServices);
-            const result = await service.update(userId, body);
+            const result = await service.update(userId, body, header);
             return { message: "update success" };
         } catch (error) {
             throw error;
@@ -103,10 +104,11 @@ export class UserController {
     public async updateUserRoles(
         @RequestScopeContainer() container: ContainerInstance,
         @Param("userId") userId: string,
-        @Body() body: UpdateRolesRequest
+        @Body() body: UpdateRolesRequest,
+        @HeaderParams() header: IUserHeader
     ) {
         const service = container.get(UserServices);
-        return service.updateRoles(userId, body.roles);
+        return service.updateRoles(userId, body.roles, header);
     }
 
     @Delete("/:userId")
