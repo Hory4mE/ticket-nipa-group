@@ -108,7 +108,9 @@ export class UserController {
         @HeaderParams() header: IUserHeader
     ) {
         const service = container.get(UserServices);
-        return service.updateRoles(userId, body.roles, header);
+        const result = await service.updateRoles(userId, body.roles, header);
+        return {message : "Roles Updated"}
+
     }
 
     @Delete("/:userId")
@@ -119,7 +121,8 @@ export class UserController {
     ) {
         try {
             const service = container.get(UserServices);
-            return service.delete(userId, header);
+            const result = await service.delete(userId, header);
+            return {message : "Roles Updated"}
         } catch (error) {
             switch (true) {
                 case error instanceof UnauthorizedError:
