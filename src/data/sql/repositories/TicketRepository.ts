@@ -36,13 +36,13 @@ export class TicketRepository extends DatabaseRepository<ITicket> implements ITi
             if (user_id) {
                 query.where("user_id", user_id);
             }
-            query.where("is_delete", false);
+            query.where("is_delete", false).orderBy("created_date");
             return query;
         });
     }
 
     async findById(id: string): Promise<ITicket> {
-        return this.first((query) => query.where("ticket_id", id));
+        return this.first((query) => query.where("ticket_id", id).where("is_delete", false));
     }
 
     async create(ticket: ICreateTicket): Promise<void> {
@@ -52,7 +52,7 @@ export class TicketRepository extends DatabaseRepository<ITicket> implements ITi
 
     async updateById(id: string, ticket: Partial<ITicket>): Promise<void> {
         const partialEntity = { ...ticket, updated_date: new Date() };
-        return this.update(partialEntity, (query) => query.where("ticket_id", id));
+        return this.update(partialEntity, (query) => query.where("ticket_id", id).where("is_delete", false));
     }
 
     async deleteById(id: string): Promise<void> {
