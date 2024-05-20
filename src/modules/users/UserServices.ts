@@ -101,7 +101,7 @@ export class UserServices {
             throw new UnauthorizedError("Invalid Token.");
         }
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
-            const entity = body.toUserEntity();
+            const entity = await body.toUserEntity();
             const user = await this.userDomainServices.findById(uow, userId);
             if (user.user_id != token.user_id || user.roles != token.roles) {
                 throw new UnauthorizedError("You don't have permission to update this user's data.")

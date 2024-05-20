@@ -63,7 +63,7 @@ export class TicketService {
         const entity = body.toTicketEntity();
         const token: any = verifyAccessToken(header.token)
         const newTicket = { ...entity, user_id: token.user_id };
-        const allowedRoles = ["USER", "ADMIN"];
+        const allowedRoles = ["USER"];
         const hasAccess = allowedRoles.includes(token.roles);
         if (!hasAccess) {
             throw new UnauthorizedError("Invalid Token.");

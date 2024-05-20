@@ -1,8 +1,8 @@
 import { IUser } from "@app/data/abstraction/entities/IUsers";
+import { hashData } from "@app/utils/HashData";
 import { Expose, IsString } from "@nipacloud/framework/core/util/validator";
 import { randomUUID } from "crypto";
 import { UserRoles } from "../model/Defination";
-import { hashData } from "@app/utils/HashData";
 
 export class CreateUserRequest {
     @Expose({ name: "username" })
@@ -14,7 +14,7 @@ export class CreateUserRequest {
     password: string;
 
     public async toUserEntity(): Promise<IUser> {
-        const passwordHash : string = await hashData(this.password)
+        const passwordHash: string = await hashData(this.password)
         const user = {
             user_id: randomUUID(),
             username: this.username,
@@ -40,9 +40,10 @@ export class UpdateUserRequest {
     @IsString()
     password: string;
 
-    public toUserEntity(): Partial<IUser> {
+    public async toUserEntity(): Promise<Partial<IUser>> {
+        const passwordHash: string = await hashData(this.password);
         const user = {
-            password: this.password,
+            password: passwordHash,
         };
         return user;
     }
