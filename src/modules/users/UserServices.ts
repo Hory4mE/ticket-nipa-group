@@ -81,12 +81,9 @@ export class UserServices {
                 throw new UnauthorizedError("Invalid username or password");
             }
             if(user.is_delete){
-                throw new UnauthorizedError("Invalid username or password");
+                throw new UnauthorizedError("User has already been deleted");
             }
             const token = generateAccessToken(user.user_id, user.roles);
-
-            
-            
             return { token: token };
         });
     }
