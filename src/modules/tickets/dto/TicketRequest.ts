@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Expose, IsEnum, IsOptional, IsString } from "@nipacloud/framework/core/util/validator";
+import { Expose, IsEnum, IsOptional, IsString, NotAllowed } from "@nipacloud/framework/core/util/validator";
 import { randomUUID } from "crypto";
 
 import { ITicket } from "@app/data/abstraction/entities/ITickets";
@@ -39,6 +39,9 @@ export class UpdateTicketRequest {
     @IsOptional()
     @IsString()
     description: string;
+
+    @NotAllowed()
+    status: TicketStatus;
 
     public toTicketEntity(): Partial<ITicket> {
         const ticket = {
