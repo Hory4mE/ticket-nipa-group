@@ -3,10 +3,10 @@ import { IAppUnitOfWork } from "@app/data/abstraction/IAppUnitOfWork";
 import { AppUnitOfWorkFactoryIdentifier, IAppUnitOfWorkFactory } from "@app/data/abstraction/IAppUnitOfWorkFactory";
 import { IUser } from "@app/data/abstraction/entities/IUsers";
 import { generateAccessToken } from "@app/utils/GenJwtToken";
+import { verifyAccessToken } from "@app/utils/VerifyAccessToken";
 import { using } from "@nipacloud/framework/core/disposable";
 import { BadRequestError, UnauthorizedError } from "@nipacloud/framework/core/http";
 import { Inject, Service } from "@nipacloud/framework/core/ioc";
-import jwt from "jsonwebtoken";
 import { UserDomainService } from "./UserDomainService";
 import { CreateUserRequest, LoginUserRequest, UpdateUserRequest } from "./dto/UserRequest";
 import { UserRoles } from "./model/Defination";
@@ -24,7 +24,7 @@ export class UserServices {
     private userDomainServices: UserDomainService;
 
     public async list(params: IListUserQueryParameter, header: IUserHeader): Promise<IUser[]> {
-        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        const token: any = verifyAccessToken(header.token);
         const allowRoles = ["ADMIN", "REVIEWER"];
         const hasAccess = allowRoles.includes(token.roles);
         if (!hasAccess) {
@@ -36,7 +36,7 @@ export class UserServices {
         });
     }
     public async getById(userId: string, header: IUserHeader): Promise<IUser> {
-        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        const token: any = verifyAccessToken(header.token);
         const allowRoles = ["ADMIN"];
         const allowRolesUser = ["USER"];
         const hasAccessAll = allowRoles.includes(token.roles);
@@ -80,13 +80,19 @@ export class UserServices {
             if (!(user && passwordCorrect)) {
                 throw new UnauthorizedError("Invalid username or password");
             }
+            if(user.is_delete){
+                throw new UnauthorizedError("Invalid username or password");
+            }
             const token = generateAccessToken(user.user_id, user.roles);
+
+            
+            
             return { token: token };
         });
     }
 
     public async update(userId: string, body: UpdateUserRequest, header: IUserHeader): Promise<void> {
-        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        const token: any = verifyAccessToken(header.token);
         const allowRoles = ["ADMIN"];
         const allowRolesUser = ["USER"];
         const hasAccessAll = allowRoles.includes(token.roles);
@@ -105,7 +111,7 @@ export class UserServices {
     }
 
     public async updateRoles(userId: string, roles: UserRoles, header: IUserHeader): Promise<void> {
-        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        const token: any = verifyAccessToken(header.token);
         const allowedRoles = ["ADMIN"];
         const hasAccess = allowedRoles.includes(token.roles);
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
@@ -117,7 +123,7 @@ export class UserServices {
     }
 
     public async delete(userId: string, header: IUserHeader) {
-        const token: any = jwt.verify(header.token, process.env.JWT_ACCESS_SECRET);
+        const token: any = verifyAccessToken(header.token);
         const allowedRoles = ["ADMIN"];
         const hasAccess = allowedRoles.includes(token.roles);
         if (!hasAccess) {
