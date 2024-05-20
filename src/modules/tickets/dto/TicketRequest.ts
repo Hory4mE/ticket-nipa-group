@@ -40,17 +40,11 @@ export class UpdateTicketRequest {
     @IsString()
     description: string;
 
-    @Expose({ name: "status" })
-    @IsOptional()
-    @IsEnum(TicketStatus)
-    status: TicketStatus;
-
     public toTicketEntity(): Partial<ITicket> {
         const ticket = {
             title: this.title,
             description: this.description,
             updated_date: new Date(),
-            status: this.status,
         };
         return ticket;
     }
