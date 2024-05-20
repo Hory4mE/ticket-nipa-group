@@ -22,11 +22,13 @@ export class TicketService {
     private ticketDomainService: TicketDomainService;
 
     public async list(params: IListTicketQueryParameter, header: ITicketHeader): Promise<ITicket[]> {
-        const token: any = verifyAccessToken(header.token)
+        const token: any = verifyAccessToken(header.token);
         const allowRoles = ["ADMIN", "REVIEWER"];
         const hasAccess = allowRoles.includes(token.roles);
         if (!hasAccess) {
-            throw new UnauthorizedError("Invalid Token.");
+            if (params.user_id != token.user_id) {
+                throw new UnauthorizedError();
+            }
         }
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
             const option = TicketQueryOptionMaker.fromTicketListQueryParams(params);
