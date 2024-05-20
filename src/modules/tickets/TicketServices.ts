@@ -3,10 +3,11 @@ import { IAppUnitOfWork } from "@app/data/abstraction/IAppUnitOfWork";
 import { AppUnitOfWorkFactoryIdentifier, IAppUnitOfWorkFactory } from "@app/data/abstraction/IAppUnitOfWorkFactory";
 import { ITicket } from "@app/data/abstraction/entities/ITickets";
 import { TicketQueryOptionMaker } from "@app/modules/tickets/query/TicketQueryOption";
+import { verifyAccessToken } from "@app/utils/VerifyAccessToken";
 import { using } from "@nipacloud/framework/core/disposable";
 import { ForbiddenError, NotFoundError, UnauthorizedError } from "@nipacloud/framework/core/http";
 import { Inject, Service } from "@nipacloud/framework/core/ioc";
-import jwt, { TokenExpiredError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { TicketDomainService } from "./TicketDomainService";
 import { CreateTicketRequest, UpdateTicketRequest } from "./dto/TicketRequest";
 import { TicketStatus } from "./models/Definitions";
@@ -22,19 +23,7 @@ export class TicketService {
     private ticketDomainService: TicketDomainService;
 
     public async list(params: IListTicketQueryParameter, header: ITicketHeader): Promise<ITicket[]> {
-        // const token: any = jwt.verify(header.token, process.env.SECRET);
-        const token: any = jwt.verify(header.token, process.env.SECRET, (error, token) => {
-            if (error) {
-                // console.error("error", error);
-                throw error;
-            }
-            console.log("token", token);
-            return token;
-        });
-        if (!token || token.exp) {
-            console.log(token.exp);
-            throw new TokenExpiredError("token expired", new Date());
-        }
+        const token: any = verifyAccessToken(header.token)
         const allowRoles = ["ADMIN", "REVIEWER"];
         const hasAccess = allowRoles.includes(token.roles);
         if (!hasAccess) {
