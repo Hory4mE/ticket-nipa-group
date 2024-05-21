@@ -61,9 +61,9 @@ export class TicketService {
     }
     public async create(body: CreateTicketRequest, header: ITicketHeader): Promise<void> {
         const entity = body.toTicketEntity();
-        const token: any = verifyAccessToken(header.token)
+        const token: any = verifyAccessToken(header.token);
         const newTicket = { ...entity, user_id: token.user_id };
-        const allowedRoles = ["USER", "ADMIN"];
+        const allowedRoles = ["USER"];
         const hasAccess = allowedRoles.includes(token.roles);
         if (!hasAccess) {
             throw new UnauthorizedError("Invalid Token.");
@@ -80,7 +80,7 @@ export class TicketService {
                 throw new UnauthorizedError("No token provided");
             }
 
-            const decoded: any = verifyAccessToken(receivedToken)
+            const decoded: any = verifyAccessToken(receivedToken);
             const userRoles = decoded.roles || [];
             const allowedRoles = ["USER"];
 
@@ -121,7 +121,7 @@ export class TicketService {
                 throw new UnauthorizedError("No token provided");
             }
 
-            const decoded: any = verifyAccessToken(receivedToken)
+            const decoded: any = verifyAccessToken(receivedToken);
             const userRoles = decoded.roles || [];
             const allowedRoles = ["ADMIN"];
 
@@ -158,7 +158,6 @@ export class TicketService {
         const token: any = verifyAccessToken(header.token);
         const accessRoles = ["USER"];
         const hasAccess = accessRoles.includes(token.roles);
-        console.log(token);
         if (!hasAccess) {
             throw new UnauthorizedError("Invalid Token.");
         }
