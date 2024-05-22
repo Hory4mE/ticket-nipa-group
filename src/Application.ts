@@ -9,6 +9,7 @@ import { HttpApplication } from "@nipacloud/framework/core/http/HttpApplication"
 import { RequestScopeInjectionMiddleware } from "./middlewares/RequestScopeInjectionMiddleware";
 import { TicketController } from "./modules/tickets/TicketController";
 import { UserController } from "./modules/users/UserController";
+import Consumer from "./rabbit/Consumer";
 
 export class Application extends HttpApplication {
     constructor() {
@@ -26,7 +27,13 @@ export class Application extends HttpApplication {
     }
 
     public async start(port: number): Promise<void> {
-        super.start(port);
+        if (this.arguments["api"]) {
+            super.start(port);
+        } else if (this.arguments["consumer"]) {
+            Consumer();
+        } else {
+            console.log("provide me more man!");
+        }
     }
     public async useServer(options: RoutingControllersOptions): Promise<void> {
         
