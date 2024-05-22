@@ -5,11 +5,15 @@ meta {
 }
 
 delete {
-  url: 127.0.0.1:5500/v1/tickets/35150307-abcd-48dd-b286-c23340670217
+  url: {{HOST}}:{{PORT}}/v1/tickets/
   body: none
   auth: none
 }
 
 headers {
-  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwicm9sZXMiOiJBRE1JTiIsInVzZXJfaWQiOiI1MjcwNmIwNi0wMmZkLTQ5NTctOWRhNi0yNTRlMmM5MzU2Y2MiLCJpYXQiOjE1MTYyMzkwMjJ9.cw4mqvju3Owc8UKRSAZ4zWHq1a-ukA0Gk71jMTHeX2Y
+  token: {{token}}
+}
+
+vars:pre-request {
+  ticketId: 35150307-abcd-48dd-b286-c23340670217
 }
