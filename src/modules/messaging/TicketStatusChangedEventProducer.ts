@@ -4,7 +4,7 @@ import { Service, Token } from "@nipacloud/framework/core/ioc";
 import { IActionUpdateStatus } from "../tickets/dto/TicketResponse";
 
 @Service()
-export class TicketStatusChangeProducer extends RabbitMQProducer<IActionUpdateStatus> {
+export class TicketStatusChangedEventProducer extends RabbitMQProducer<IActionUpdateStatus> {
     public exchange: string = "heldesk-ticket";
     public routingKey: string = "update-ticket-status";
     constructor(rabbitConnector: RabbitMQConnector, option?: { prefixTopic: string }) {
@@ -23,4 +23,6 @@ export class TicketStatusChangeProducer extends RabbitMQProducer<IActionUpdateSt
     public async onError(): Promise<void> {}
 }
 
-export const TicketStatusChangedEventIdentifier = new Token<TicketStatusChangeProducer>("TicketStatusChangeProducer");
+export const TicketStatusChangedEventIdentifier = new Token<TicketStatusChangedEventProducer>(
+    "TicketStatusChangeProducer"
+);

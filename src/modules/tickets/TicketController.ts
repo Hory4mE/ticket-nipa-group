@@ -30,7 +30,7 @@ import { ITicketHeader } from "./query/TicketHeader";
 @JsonController("/v1/tickets")
 export class TicketController {
     @Get("/")
-    // @Authorized([UserRoles.USER, UserRoles.ADMIN, UserRoles.REVIEWER])
+    @Authorized([UserRoles.USER, UserRoles.ADMIN, UserRoles.REVIEWER])
     public async listTickets(
         @RequestScopeContainer() container: ContainerInstance,
         @QueryParams() queryParam: IListTicketQueryParameter,

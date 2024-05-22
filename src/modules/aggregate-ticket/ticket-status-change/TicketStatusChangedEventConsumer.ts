@@ -28,7 +28,7 @@ export class TicketStatusChangedEventConsumer extends RabbitMQConsumer<IActionUp
     }
 
     public subscriptionOption(): Options.Consume {
-        const option: Options.Consume = { consumerTag: `worker:${this.constructor.name}@${process.env.WORKER_NAME}` };
+        const option: Options.Consume = { noAck: true };
         return option;
     }
 }

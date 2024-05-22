@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Channel, ConsumeMessage, Options } from "amqplib";
-import { randomUUID } from "crypto";
 import { Container } from "@nipacloud/framework/core/ioc";
 import { Logger } from "@nipacloud/framework/core/util/log";
-import { RabbitMQConnector, RabbitMQConnectionState } from "../connection/RabbitMQConnector";
+import { Channel, ConsumeMessage, Options } from "amqplib";
+import { randomUUID } from "crypto";
+import { RabbitMQConnectionState, RabbitMQConnector } from "../connection/RabbitMQConnector";
 
 export interface IRabbitMQCommiter {
     rawMessage: ConsumeMessage;

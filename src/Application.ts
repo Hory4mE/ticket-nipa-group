@@ -6,12 +6,15 @@ import {
     RoutingControllersOptions,
 } from "@nipacloud/framework/core/http";
 import { HttpApplication } from "@nipacloud/framework/core/http/HttpApplication";
+import { Container } from "@nipacloud/framework/core/ioc";
 import { RequestScopeInjectionMiddleware } from "./middlewares/RequestScopeInjectionMiddleware";
+import {
+    TicketStatusChangedEventIdentifier,
+    TicketStatusChangedEventProducer,
+} from "./modules/messaging/TicketStatusChangedEventProducer";
 import { TicketController } from "./modules/tickets/TicketController";
 import { UserController } from "./modules/users/UserController";
 import { RabbitMQConnector, RabbitMQConnectorIdentifier } from "./utils/connection/RabbitMQConnector";
-import { TicketStatusChangeProducer, TicketStatusChangedEventIdentifier } from "./modules/messaging/TicketStatusChangeProducer";
-import { Container } from "@nipacloud/framework/core/ioc";
 
 export class Application extends HttpApplication {
     constructor() {
@@ -32,10 +35,10 @@ export class Application extends HttpApplication {
         });
         await rabbitMQConnector.connect();
 
-        const ticketStatusChangeProducer = new TicketStatusChangeProducer(rabbitMQConnector);
+        const ticketStatusChangedEventProducer = new TicketStatusChangedEventProducer(rabbitMQConnector);
 
         Container.set(RabbitMQConnectorIdentifier, rabbitMQConnector);
-        Container.set(TicketStatusChangedEventIdentifier, ticketStatusChangeProducer)
+        Container.set(TicketStatusChangedEventIdentifier, ticketStatusChangedEventProducer);
         super.start(port);
     }
     public async useServer(options: RoutingControllersOptions): Promise<void> {

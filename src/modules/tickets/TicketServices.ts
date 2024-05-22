@@ -4,13 +4,11 @@ import { AppUnitOfWorkFactoryIdentifier, IAppUnitOfWorkFactory } from "@app/data
 import { ITicket } from "@app/data/abstraction/entities/ITickets";
 import { TicketQueryOptionMaker } from "@app/modules/tickets/query/TicketQueryOption";
 import { verifyAccessToken } from "@app/utils/VerifyAccessToken";
+import { RabbitMQConnector } from "@app/utils/connection/RabbitMQConnector";
 import { using } from "@nipacloud/framework/core/disposable";
 import { ForbiddenError, NotFoundError, UnauthorizedError } from "@nipacloud/framework/core/http";
-import { Inject, Service } from "@nipacloud/framework/core/ioc";
-import {
-    TicketStatusChangeProducer,
-    TicketStatusChangedEventIdentifier,
-} from "../messaging/TicketStatusChangeProducer";
+import { Container, Inject, Service } from "@nipacloud/framework/core/ioc";
+import { TicketStatusChangedEventIdentifier } from "../messaging/TicketStatusChangedEventProducer";
 import { UserDomainService } from "../users/UserDomainService";
 import { TicketDomainService } from "./TicketDomainService";
 import { CreateTicketRequest, UpdateTicketRequest } from "./dto/TicketRequest";
@@ -30,8 +28,8 @@ export class TicketService {
     @Inject()
     private userDomainServices: UserDomainService;
 
-    @Inject(TicketStatusChangedEventIdentifier)
-    private ticketStatusChangedProducer: TicketStatusChangeProducer;
+    // @Inject(TicketStatusChangedEventIdentifier)
+    // private ticketStatusChangeProducer: TicketStatusChangeProducer;
 
     public async list(params: IListTicketQueryParameter, header: ITicketHeader): Promise<ITicket[]> {
         const token: any = verifyAccessToken(header.token);
@@ -176,8 +174,13 @@ export class TicketService {
                         roles: user.roles,
                     },
                 };
-                this.ticketStatusChangedProducer.init();
-                this.ticketStatusChangedProducer.send(jsonbody);
+                const rabbitMQConnector = new RabbitMQConnector({
+                    hostname: "localhost",
+                });
+                const producer = Container.get(TicketStatusChangedEventIdentifier);
+                await rabbitMQConnector.connect();
+                await producer.init();
+                await producer.send(jsonbody);
             } else {
                 throw new NotFoundError("No Status provided for updates...");
             }
