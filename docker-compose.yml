@@ -1,0 +1,44 @@
+version: "3.2"
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+        - rabbitmq_go_net
+
+  service-api:
+    container_name: service-api
+    build: .
+    ports:
+      - "5000:3000"
+    command: yarn app --api
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - PORT=3000
+    networks:
+        - rabbitmq_go_net
+    depends_on:
+      - rabbitmq
+
+  consumer:
+    container_name: consumer_kub
+    build: .
+    command: yarn app --consumer
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+    networks:
+        - rabbitmq_go_net
+    depends_on:
+      - service-api
+
+
+
+networks:
+  rabbitmq_go_net:
+    driver: bridge

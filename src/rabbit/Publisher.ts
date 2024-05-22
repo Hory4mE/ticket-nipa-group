@@ -7,7 +7,7 @@ class Publisher {
 
     protected exchange = "exchange-test";
     public async create() {
-        this._connect = await connect("amqp://localhost");
+        this._connect = await connect(`amqp://${process.env.RABBITMQ_HOST}}`);
         this._channel = await this._connect.createChannel();
         this._channel.assertExchange(this.exchange, "topic");
     }

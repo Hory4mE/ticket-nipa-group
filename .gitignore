@@ -2,5 +2,3 @@ node_modules
 .npmrc
 .vscode
 .env
-.env.local
-env
