@@ -13,12 +13,27 @@ export class CreateUserRequest {
     @IsString()
     password: string;
 
+    @Expose({ name: "first_name" })
+    @IsString()
+    first_name: string;
+
+    @Expose({ name: "last_name" })
+    @IsString()
+    last_name: string;
+
+    @Expose({ name: "email" })
+    @IsString()
+    email: string;
+
     public async toUserEntity(): Promise<IUser> {
-        const passwordHash: string = await hashData(this.password)
+        const passwordHash: string = await hashData(this.password);
         const user = {
             user_id: randomUUID(),
             username: this.username,
             password: passwordHash,
+            first_name: this.first_name,
+            last_name: this.last_name,
+            email: this.email,
             roles: UserRoles.USER,
             is_delete: false,
         };

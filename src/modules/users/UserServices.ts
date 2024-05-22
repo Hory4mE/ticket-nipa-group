@@ -63,7 +63,7 @@ export class UserServices {
             const option = UserQueryOptionMaker.fromUserListQueryParams(params);
             const [user] = await this.userDomainServices.list(uow, option);
             if (user) {
-                throw new BadRequestError("Duplicate username")
+                throw new BadRequestError("Duplicate username");
             }
             return this.userDomainServices.create(uow, entity);
         });
@@ -80,10 +80,10 @@ export class UserServices {
             if (!(user && passwordCorrect)) {
                 throw new UnauthorizedError("Invalid username or password");
             }
-            if(user.is_delete){
+            if (user.is_delete) {
                 throw new UnauthorizedError("User has already been deleted");
             }
-            const token = generateAccessToken(user.user_id, user.roles);
+            const token = generateAccessToken(user.user_id, user.username, user.roles);
             return { token: token };
         });
     }
@@ -101,7 +101,7 @@ export class UserServices {
             const entity = await body.toUserEntity();
             const user = await this.userDomainServices.findById(uow, userId);
             if (user.user_id != token.user_id || user.roles != token.roles) {
-                throw new UnauthorizedError("You don't have permission to update this user's data.")
+                throw new UnauthorizedError("You don't have permission to update this user's data.");
             }
             return this.userDomainServices.update(uow, userId, entity);
         });

@@ -3,12 +3,15 @@ import { IAppUnitOfWork } from "@app/data/abstraction/IAppUnitOfWork";
 import { AppUnitOfWorkFactoryIdentifier, IAppUnitOfWorkFactory } from "@app/data/abstraction/IAppUnitOfWorkFactory";
 import { ITicket } from "@app/data/abstraction/entities/ITickets";
 import { TicketQueryOptionMaker } from "@app/modules/tickets/query/TicketQueryOption";
+import Publisher from "@app/rabbit/Publisher";
 import { verifyAccessToken } from "@app/utils/VerifyAccessToken";
 import { using } from "@nipacloud/framework/core/disposable";
 import { ForbiddenError, NotFoundError, UnauthorizedError } from "@nipacloud/framework/core/http";
 import { Inject, Service } from "@nipacloud/framework/core/ioc";
+import { UserDomainService } from "../users/UserDomainService";
 import { TicketDomainService } from "./TicketDomainService";
 import { CreateTicketRequest, UpdateTicketRequest } from "./dto/TicketRequest";
+import { IActionUpdateStatus } from "./dto/TicketResponse";
 import { TicketStatus } from "./models/Definitions";
 import { IListTicketQueryParameter } from "./query/ListTicketQueryParameter";
 import { ITicketHeader } from "./query/TicketHeader";
@@ -20,6 +23,9 @@ export class TicketService {
 
     @Inject()
     private ticketDomainService: TicketDomainService;
+
+    @Inject()
+    private userDomainServices: UserDomainService;
 
     public async list(params: IListTicketQueryParameter, header: ITicketHeader): Promise<ITicket[]> {
         const token: any = verifyAccessToken(header.token);
@@ -97,8 +103,6 @@ export class TicketService {
             }
 
             const receivedId = decoded.user_id;
-            console.log(decoded.user_id);
-            console.log(userTicket);
             if (!((await userTicket).user_id == receivedId)) {
                 throw new UnauthorizedError("This Ticket is not Yours!");
             }
@@ -114,6 +118,7 @@ export class TicketService {
 
     public async updateStatus(ticketId: string, status: TicketStatus, header: ITicketHeader): Promise<void> {
         return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
+            const pub = new Publisher();
             const ticket = await this.ticketDomainService.findById(uow, ticketId);
 
             const receivedToken = header.token;
@@ -135,9 +140,8 @@ export class TicketService {
             if (!ticket) {
                 throw new NotFoundError("Ticket Not Found");
             }
-
             if (status) {
-                // Check if user provides a status
+                const user = await this.userDomainServices.findById(uow, ticket.user_id);
                 if (
                     ticket.status === TicketStatus.PENDING &&
                     (status === TicketStatus.IN_PROGRESS || status === TicketStatus.CANCELLED)
@@ -148,6 +152,26 @@ export class TicketService {
                 } else {
                     throw new ForbiddenError("Invalid status transition or ticket status cannot be changed");
                 }
+                const jsonbody: IActionUpdateStatus = {
+                    actor: {
+                        username: decoded.username,
+                        roles: decoded.roles,
+                    },
+                    ticket: {
+                        ticketId: ticket.ticket_id,
+                        title: ticket.title,
+                        old_status: ticket.status,
+                        new_status: status,
+                        update_at: new Date(),
+                    },
+                    relate_personal: {
+                        username: user.username,
+                        fullname: user.first_name + " " + user.last_name,
+                        email: user.email,
+                        roles: user.roles,
+                    },
+                };
+                await pub.publish(jsonbody);
             } else {
                 throw new NotFoundError("No Status provided for updates...");
             }

@@ -5,11 +5,15 @@ meta {
 }
 
 get {
-  url: {{HOST}}:{{PORT}}/v1/tickets
+  url: {{HOST}}:{{PORT}}/v1/tickets?user_id=123
   body: none
   auth: none
 }
 
+query {
+  user_id: 123
+}
+
 headers {
-  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlcl9pZCI6IjUiLCJyb2xlcyI6IkFETUlOIiwiaWF0IjoxNTE2MjM5MDIyfQ.5hasF2OwPvJ-kuwtNiIuX7_4SosIf_FRGm_UCaVI7FA
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYThmMGM4NTctMWU2ZS00ZTJmLThiNzgtODBhNmYzYTUyNjlhIiwicm9sZXMiOiJBRE1JTiIsImlhdCI6MTcxNjE3NzQwOCwiZXhwIjoxNzE2MTgxMDA4fQ.mc8i_tcmxRuy03hi-lMcnzdUFrBnv2x-doR9g19H2dI
 }

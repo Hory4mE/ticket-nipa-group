@@ -1,4 +1,4 @@
-import * as bcrypt from "bcrypt";
+import bcrypt from "bcrypt";
 import { Knex } from "knex";
 
 export async function seed(knex: Knex): Promise<void> {
@@ -9,61 +9,82 @@ export async function seed(knex: Knex): Promise<void> {
 
     await knex("users").insert([
         {
-            user_id: "be11b053-067f-43b6-ac4a-709503be3ea9",
+            user_id: "fe2c7116-6334-41fd-b675-193c6ccbcaa5",
             username: "username1",
-            password: await bcrypt.hash("123", parseInt(process.env.SALT!)),
+            password: await bcrypt.hash("1234", parseInt(process.env.SALT!)),
+            first_name: "firstname",
+            last_name: "last_name",
+            email: "email@email.com",
             roles: "ADMIN",
         },
         {
-            user_id: "ccce26c7-9e37-4be5-b9a9-92891afe465d",
+            user_id: "bad5786f-6ae2-4275-8e55-b85a0bc8461e",
             username: "username2",
-            password: await bcrypt.hash("123", parseInt(process.env.SALT!)),
+            password: await bcrypt.hash("1234", parseInt(process.env.SALT!)),
+            first_name: "firstname",
+            last_name: "last_name",
+            email: "email@email.com",
             roles: "USER",
         },
         {
-            user_id: "284bed41-2f78-4b78-ade5-9075458ddf4c",
-            username: "username3",
-            password: await bcrypt.hash("123", parseInt(process.env.SALT!)),
-            roles: "USER",
-        },
-        {
-            user_id: "b2192797-a2be-4d98-b21e-555b28a50c06",
-            username: "username4",
-            password: await bcrypt.hash("123", parseInt(process.env.SALT!)),
+            user_id: "315e46bf-7ad9-4774-9bc3-137bb0661ead",
+            username: "usernmae3",
+            password: await bcrypt.hash("1234", parseInt(process.env.SALT!)),
+            first_name: "firstname",
+            last_name: "last_name",
+            email: "email@email.com",
             roles: "REVIEWER",
+        },
+        {
+            user_id: "34609b96-1c7a-438e-b6db-c8d64b94d285",
+            username: "usernmae4",
+            password: await bcrypt.hash("1234", parseInt(process.env.SALT!)),
+            first_name: "firstname",
+            last_name: "last_name",
+            email: "email@email.com",
+            roles: "USER",
+        },
+        {
+            user_id: "ab92989b-dc61-4a26-88c9-07317a2853f4",
+            username: "usernmae5",
+            password: await bcrypt.hash("1234", parseInt(process.env.SALT!)),
+            first_name: "firstname",
+            last_name: "last_name",
+            email: "email@email.com",
+            roles: "USER",
         },
     ]);
     // Inserts seed entries
     await knex("tickets").insert([
         {
-            ticket_id: "e1d98449-e8a7-45ec-af55-08683ce82647",
-            title: "ticket1",
+            ticket_id: "f6a20740-00f3-45bf-ada1-596479e500a1",
+            title: "rowValue1",
             description: "",
             status: "PENDING",
             created_date: "2024-05-01 19:43:46",
             updated_date: "2024-05-06 16:43:09",
             is_delete: false,
-            user_id: "ccce26c7-9e37-4be5-b9a9-92891afe465d",
+            user_id: "bad5786f-6ae2-4275-8e55-b85a0bc8461e",
         },
         {
-            ticket_id: "81c580b0-2e1a-4372-beac-7d6c39f96228",
-            title: "ticket2",
-            description: "something",
+            ticket_id: "5f5b3a33-1a52-4b9b-82cd-7947552b9a1d",
+            title: "rowValue2",
+            description: "gegeg",
             status: "PENDING",
             created_date: "2024-05-01 19:43:46",
             updated_date: "2024-05-06 16:43:09",
             is_delete: false,
-            user_id: "ccce26c7-9e37-4be5-b9a9-92891afe465d",
+            user_id: "ab92989b-dc61-4a26-88c9-07317a2853f4",
         },
         {
-            ticket_id: "b60853c3-1e5f-4c58-a605-50d78763aafb",
-            title: "ticket3",
+            ticket_id: "6703a866-f329-4eee-812e-babdd6765597",
+            title: "rowValue3",
             status: "PENDING",
             description: "something",
             created_date: "2024-05-01 19:43:46",
             updated_date: "2024-05-06 16:43:09",
             is_delete: false,
-            user_id: "ccce26c7-9e37-4be5-b9a9-92891afe465d",
+            user_id: "bad5786f-6ae2-4275-8e55-b85a0bc8461e",
         },
     ]);
 }
