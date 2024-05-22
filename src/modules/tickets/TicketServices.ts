@@ -112,9 +112,7 @@ export class TicketService {
             }
 
             const entity = body.toTicketEntity();
-            const result = this.ticketDomainService.update(uow, ticketId, entity);
-
-            return result;
+            return this.ticketDomainService.update(uow, ticketId, entity);;
         });
     }
 
