@@ -112,7 +112,7 @@ export class TicketService {
             }
 
             const entity = body.toTicketEntity();
-            return this.ticketDomainService.update(uow, ticketId, entity);;
+            return this.ticketDomainService.update(uow, ticketId, entity);
         });
     }
 
@@ -160,9 +160,9 @@ export class TicketService {
                     ticket: {
                         ticketId: ticket.ticket_id,
                         title: ticket.title,
-                        oldStatus: ticket.status,
-                        newStatus: status,
-                        updateAt: new Date(),
+                        old_status: ticket.status,
+                        new_status: status,
+                        update_at: new Date(),
                     },
                     relate_personal: {
                         username: user.username,
