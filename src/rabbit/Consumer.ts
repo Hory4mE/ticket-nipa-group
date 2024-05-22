@@ -30,7 +30,7 @@ const Consumer = () => {
                             async function (msg: ConsumeMessage) {
                                 if (msg.content) {
                                     await axios.post(
-                                        "https://webhook.site/154a0d0f-3ab4-43b1-946e-53840154858b",
+                                        "https://webhook.site/6d39a67e-deec-431c-b8fc-d1e9aecf0f89",
                                         msg.content
                                     );
                                     console.log(" [x] %s", msg.content.toString());

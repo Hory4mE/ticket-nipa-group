@@ -11,18 +11,11 @@ export const authorizationChecker = async (action: Action, roles: string[]) => {
 
     try {
         const user: any = verifyAccessToken(token)
-        const validRoles = Object.values(UserRoles);
-
-        // Validate roles against UserRoles enum
-        const userRoles = user.roles.filter((role: any) => validRoles.includes(role))
-
-        console.log("user : ", user)
-        console.log("user roles : ", user.roles)
         if (!user) throw new UnauthorizedError("You're not the one of our user");
         //No Roles required
         if (roles.length === 0) return true;
         // Authorized some of role in user roles
-        if (roles.some(role => userRoles.roles.includes(role))) return true;
+        if (roles.some(role => user.roles.includes(role))) return true;
 
         return false; // unexpected error
 
