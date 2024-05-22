@@ -15,6 +15,7 @@ export class Application extends HttpApplication {
     constructor() {
         super();
 
+        
         this.useMiddleware(RequestIdGeneratorMiddleware);
         this.useMiddleware(RequestContainerLifeCycleMiddleware);
         this.useMiddleware(RequestLoggerMiddleware);
@@ -35,6 +36,7 @@ export class Application extends HttpApplication {
         }
     }
     public async useServer(options: RoutingControllersOptions): Promise<void> {
+        
         super.useServer(options);
     }
 }
