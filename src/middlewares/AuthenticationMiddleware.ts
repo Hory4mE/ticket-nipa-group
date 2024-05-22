@@ -18,7 +18,7 @@ export const authorizationChecker = async (action: Action, roles: string[]) => {
 
         console.log("user : ", user)
         console.log("user roles : ", user.roles)
-        if (!user) throw new UnauthorizedError("You're not the one of out user");
+        if (!user) throw new UnauthorizedError("You're not the one of our user");
         //No Roles required
         if (roles.length === 0) return true;
         // Authorized some of role in user roles
