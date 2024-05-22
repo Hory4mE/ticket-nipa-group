@@ -9,9 +9,9 @@ export interface IActionUpdateStatus {
     ticket: {
         ticketId: string;
         title: string;
-        oldStatus: TicketStatus;
-        newStatus: TicketStatus;
-        updateAt: Date;
+        old_status: TicketStatus;
+        new_status: TicketStatus;
+        update_at: Date;
     };
     relate_personal: {
         username: string;
