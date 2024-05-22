@@ -1,5 +1,6 @@
 import { ApplicationError } from "@nipacloud/framework/core/error";
 import {
+    Authorized,
     BadRequestError,
     Body,
     Delete,
@@ -20,6 +21,7 @@ import { ContainerInstance } from "@nipacloud/framework/core/ioc";
 import { DatabaseError } from "@nipacloud/framework/data/sql";
 import { JsonWebTokenError } from "jsonwebtoken";
 import "reflect-metadata";
+import { UserRoles } from "../users/model/Defination";
 import { TicketService } from "./TicketServices";
 import { CreateTicketRequest, UpdateTicketRequest, UpdateTicketStatusRequest } from "./dto/TicketRequest";
 import { IListTicketQueryParameter } from "./query/ListTicketQueryParameter";
@@ -28,6 +30,7 @@ import { ITicketHeader } from "./query/TicketHeader";
 @JsonController("/v1/tickets")
 export class TicketController {
     @Get("/")
+    // @Authorized([UserRoles.USER, UserRoles.ADMIN, UserRoles.REVIEWER])
     public async listTickets(
         @RequestScopeContainer() container: ContainerInstance,
         @QueryParams() queryParam: IListTicketQueryParameter,
@@ -55,6 +58,7 @@ export class TicketController {
     }
 
     @Get("/:ticketId")
+    @Authorized([UserRoles.USER, UserRoles.ADMIN, UserRoles.REVIEWER])
     public async getTicketById(
         @RequestScopeContainer() container: ContainerInstance,
         @Param("ticketId") ticketId: string,
@@ -80,6 +84,7 @@ export class TicketController {
     }
 
     @Post("/")
+    @Authorized([UserRoles.USER])
     public async createTicket(
         @RequestScopeContainer() container: ContainerInstance,
         @Body() body: CreateTicketRequest,
@@ -108,6 +113,7 @@ export class TicketController {
     }
 
     @Patch("/:ticketId")
+    @Authorized([UserRoles.USER])
     public async updateTicket(
         @RequestScopeContainer() container: ContainerInstance,
         @Param("ticketId") ticketId: string,
@@ -137,6 +143,7 @@ export class TicketController {
     }
 
     @Patch("/:ticketId/status")
+    @Authorized([UserRoles.ADMIN])
     public async updateTicketStatus(
         @RequestScopeContainer() container: ContainerInstance,
         @Param("ticketId") ticketId: string,
@@ -166,6 +173,7 @@ export class TicketController {
     }
 
     @Delete("/:ticketId")
+    @Authorized([UserRoles.ADMIN])
     public async deleteTicket(
         @RequestScopeContainer() container: ContainerInstance,
         @Param("ticketId") ticketId: string,

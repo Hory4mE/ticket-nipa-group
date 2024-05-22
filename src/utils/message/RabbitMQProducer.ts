@@ -19,7 +19,7 @@ export abstract class RabbitMQProducer<TMessage> implements IMessageExchangeProd
 
     constructor(
         private readonly rabbitConnector: RabbitMQConnector,
-        private options?: {
+        private options: {
             assertQueue?: Options.AssertQueue;
         }
     ) {

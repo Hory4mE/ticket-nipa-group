@@ -1,4 +1,5 @@
 import {
+    Authorized,
     Body,
     Delete,
     Get,
@@ -17,12 +18,14 @@ import { ContainerInstance } from "@nipacloud/framework/core/ioc";
 import "reflect-metadata";
 import { UserServices } from "./UserServices";
 import { CreateUserRequest, LoginUserRequest, UpdateRolesRequest, UpdateUserRequest } from "./dto/UserRequest";
+import { UserRoles } from "./model/Defination";
 import { IListUserQueryParameter } from "./query/ListUserQueryParameter";
 import { IUserHeader } from "./query/UserHeader";
 
 @JsonController("/v1/users")
 export class UserController {
     @Get("/")
+    @Authorized([UserRoles.ADMIN, UserRoles.REVIEWER])
     public async listUsers(
         @RequestScopeContainer() container: ContainerInstance,
         @QueryParams() queryParam: IListUserQueryParameter,
@@ -42,6 +45,7 @@ export class UserController {
     }
 
     @Get("/:userId")
+    @Authorized([UserRoles.USER, UserRoles.ADMIN])
     public async getUserById(
         @RequestScopeContainer() container: ContainerInstance,
         @Param("userId") userId: string,
@@ -60,6 +64,7 @@ export class UserController {
     }
 
     @Post("/")
+    @Authorized([UserRoles.USER])
     public async createUser(@RequestScopeContainer() container: ContainerInstance, @Body() body: CreateUserRequest) {
         try {
             const service = container.get(UserServices);
@@ -85,10 +90,11 @@ export class UserController {
         }
     }
     @Patch("/:userId")
+    @Authorized([UserRoles.USER])
     public async updateUserPassword(
         @RequestScopeContainer() container: ContainerInstance,
         @Param("userId") userId: string,
-        @HeaderParams() header : IUserHeader,
+        @HeaderParams() header: IUserHeader,
         @Body() body: UpdateUserRequest
     ) {
         try {
@@ -101,6 +107,7 @@ export class UserController {
     }
 
     @Patch("/:userId/roles")
+    @Authorized([UserRoles.ADMIN])
     public async updateUserRoles(
         @RequestScopeContainer() container: ContainerInstance,
         @Param("userId") userId: string,
@@ -109,11 +116,11 @@ export class UserController {
     ) {
         const service = container.get(UserServices);
         const result = await service.updateRoles(userId, body.roles, header);
-        return {message : "Roles Updated"}
-
+        return { message: "Roles Updated" };
     }
 
     @Delete("/:userId")
+    @Authorized([UserRoles.ADMIN])
     public async deleteUser(
         @RequestScopeContainer() container: ContainerInstance,
         @Param("userId") userId: string,
@@ -122,7 +129,7 @@ export class UserController {
         try {
             const service = container.get(UserServices);
             const result = await service.delete(userId, header);
-            return {message : "Roles Updated"}
+            return { message: "Roles Updated" };
         } catch (error) {
             switch (true) {
                 case error instanceof UnauthorizedError:

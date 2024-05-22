@@ -7,9 +7,9 @@ import { IActionUpdateStatus } from "../tickets/dto/TicketResponse";
 export class TicketStatusChangeProducer extends RabbitMQProducer<IActionUpdateStatus> {
     public exchange: string = "heldesk-ticket";
     public routingKey: string = "update-ticket-status";
-    constructor(rabbitConnector: RabbitMQConnector, option: { prefixTopic: string }) {
+    constructor(rabbitConnector: RabbitMQConnector, option?: { prefixTopic: string }) {
         super(rabbitConnector, { assertQueue: { maxPriority: 2 } });
-        this.exchange = `${option.prefixTopic ?? ""}${this.exchange}`;
+        // this.exchange = `${option.prefixTopic ?? ""}${this.exchange}`;
     }
 
     public messageDeserializer(raw: Buffer): IActionUpdateStatus {
@@ -23,4 +23,4 @@ export class TicketStatusChangeProducer extends RabbitMQProducer<IActionUpdateSt
     public async onError(): Promise<void> {}
 }
 
-export const WalletTypeChangedEventIdentifier = new Token<TicketStatusChangeProducer>("WalletTypeChangedEventProducer");
+export const TicketStatusChangedEventIdentifier = new Token<TicketStatusChangeProducer>("TicketStatusChangeProducer");
