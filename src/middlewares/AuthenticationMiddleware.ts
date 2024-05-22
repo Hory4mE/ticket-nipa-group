@@ -1,4 +1,3 @@
-import { UserRoles } from '@app/modules/users/model/Defination';
 import { verifyAccessToken } from '@app/utils/VerifyAccessToken';
 import { InternalServerError, UnauthorizedError } from '@nipacloud/framework/core/http';
 import { Action } from 'routing-controllers';
@@ -11,6 +10,7 @@ export const authorizationChecker = async (action: Action, roles: string[]) => {
 
     try {
         const user: any = verifyAccessToken(token)
+
         if (!user) throw new UnauthorizedError("You're not the one of our user");
         //No Roles required
         if (roles.length === 0) return true;

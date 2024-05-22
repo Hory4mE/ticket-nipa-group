@@ -64,7 +64,7 @@ export class UserController {
     }
 
     @Post("/")
-    @Authorized([UserRoles.USER])
+    @Authorized([UserRoles.USER, UserRoles.ADMIN])
     public async createUser(@RequestScopeContainer() container: ContainerInstance, @Body() body: CreateUserRequest) {
         try {
             const service = container.get(UserServices);

@@ -3,7 +3,7 @@ import axios from "axios";
 
 const Consumer = () => {
     const con = amqp.connect(
-        "amqp://localhost",
+        `amqp://${process.env.RABBITMQ_HOST}`,
         function (error0: any, connection: { createChannel: (arg0: (error1: any, channel: any) => void) => void }) {
             if (error0) {
                 throw error0;
@@ -30,7 +30,7 @@ const Consumer = () => {
                             async function (msg: ConsumeMessage) {
                                 if (msg.content) {
                                     await axios.post(
-                                        "https://webhook.site/154a0d0f-3ab4-43b1-946e-53840154858b",
+                                        process.env.WEBHOOK,
                                         msg.content
                                     );
                                     console.log(" [x] %s", msg.content.toString());
