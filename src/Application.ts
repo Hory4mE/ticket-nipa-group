@@ -31,7 +31,7 @@ export class Application extends HttpApplication {
 
     public async start(port: number): Promise<void> {
         const rabbitMQConnector = new RabbitMQConnector({
-            hostname: "localhost",
+            hostname: process.env.RABBITMQ_HOST,
         });
         await rabbitMQConnector.connect();
 
