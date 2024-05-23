@@ -19,7 +19,12 @@ export class TicketStatusChangedEventConsumer extends RabbitMQConsumer<IActionUp
     public async onUnsubscribed(): Promise<void> {}
     public async onMessage(message: IActionUpdateStatus, committer?: IRabbitMQCommiter): Promise<void> {
         if (message) {
-            await axios.post("https://webhook.site/6d39a67e-deec-431c-b8fc-d1e9aecf0f89", message);
+            try {
+                await axios.post(process.env.WEBHOOK, message);
+            } catch (error) {
+                console.log("Someting went wrong: ", error);
+                console.log(`[${this.constructor.name}] received ${JSON.stringify(message)}`);
+            }
         }
     }
 
