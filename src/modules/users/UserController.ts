@@ -12,7 +12,7 @@ import {
     Post,
     QueryParams,
     RequestScopeContainer,
-    UnauthorizedError
+    UnauthorizedError,
 } from "@nipacloud/framework/core/http";
 import { ContainerInstance } from "@nipacloud/framework/core/ioc";
 import "reflect-metadata";
@@ -116,8 +116,7 @@ export class UserController {
     ) {
         const service = container.get(UserServices);
         const result = await service.updateRoles(userId, body.roles, header);
-        return { message: "Roles Updated" }
-
+        return { message: "Roles Updated" };
     }
 
     @Delete("/:userId")
@@ -130,7 +129,7 @@ export class UserController {
         try {
             const service = container.get(UserServices);
             const result = await service.delete(userId, header);
-            return { message: "Roles Updated" }
+            return { message: "Roles Updated" };
         } catch (error) {
             switch (true) {
                 case error instanceof UnauthorizedError:

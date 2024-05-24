@@ -5,6 +5,7 @@ export async function seed(knex: Knex): Promise<void> {
     // Deletes ALL existing entries
     await knex("tickets").del();
     await knex("users").del();
+    console.log(await bcrypt.hash("123", parseInt(process.env.SALT!)));
 
     await knex("users").insert([
         {
@@ -79,7 +80,7 @@ export async function seed(knex: Knex): Promise<void> {
             ticket_id: "6703a866-f329-4eee-812e-babdd6765597",
             title: "rowValue3",
             status: "PENDING",
-            description: "rtyuiol",
+            description: "something",
             created_date: "2024-05-01 19:43:46",
             updated_date: "2024-05-06 16:43:09",
             is_delete: false,
