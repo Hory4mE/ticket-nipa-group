@@ -10,7 +10,6 @@ export const authorizationChecker = async (action: Action, roles: string[]) => {
 
     try {
         const user: any = verifyAccessToken(token)
-
         if (!user) throw new UnauthorizedError("You're not the one of our user");
         //No Roles required
         if (roles.length === 0) return true;
