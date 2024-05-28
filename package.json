@@ -45,7 +45,7 @@
     },
     "scripts": {
         "dev": "nodemon --watch \"**/*\" -e ts,tsx --exec node -r tsconfig-paths/register -r ts-node/register --inspect ./src/main.ts",
-        "test": "nyc mocha test/**/*.Spec.ts --config=.mocharc.json  --exit",
+        "test": "nyc mocha test/**/*.spec.ts --config=.mocharc.json  --exit",
         "test:unit": "mocha --config=.mocharc.json",
         "watch": "mocha-typescript-watch",
         "build": "tsc",
