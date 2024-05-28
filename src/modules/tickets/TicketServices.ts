@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+import { getRedisClient } from "@app/config/redis";
 import { IAppUnitOfWork } from "@app/data/abstraction/IAppUnitOfWork";
 import { AppUnitOfWorkFactoryIdentifier, IAppUnitOfWorkFactory } from "@app/data/abstraction/IAppUnitOfWorkFactory";
 import { ITicket } from "@app/data/abstraction/entities/ITickets";
@@ -55,15 +56,23 @@ export class TicketService {
         if (!hasAccessAll && !hasAccessSelf) {
             throw new UnauthorizedError("Invalid Token.");
         }
-        return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
-            const tickets = await this.ticketDomainService.findById(uow, ticketId);
-            if (hasAccessSelf) {
-                if (tickets.user_id != token.user_id) {
-                    throw new UnauthorizedError("Invalid Token.");
+        const client = getRedisClient();
+        if (client.get("id=" + ticketId) == null) {
+            const result = await client.get("id=" + ticketId);
+            console.log(result);
+            return JSON.parse(result);
+        } else {
+            return using(this.unitOfWorkFactory.create())(async (uow: IAppUnitOfWork) => {
+                const tickets = await this.ticketDomainService.findById(uow, ticketId);
+                if (hasAccessSelf) {
+                    if (tickets.user_id != token.user_id) {
+                        throw new UnauthorizedError("Invalid Token.");
+                    }
                 }
-            }
-            return tickets;
-        });
+                await client.set("id=" + ticketId, JSON.stringify(tickets));
+                return tickets;
+            });
+        }
     }
     public async create(body: CreateTicketRequest, header: ITicketHeader): Promise<void> {
         const entity = body.toTicketEntity();
